@@ -19,7 +19,7 @@
     <string name="main_desc_bg_mask">背景遮罩</string>
     <string name="main_desc_connect">连接或断开</string>
 
-    <string name="fragment_firstinstall_txt">默认连接到 https://one.4w.ink。您可以在“更换服务器”中使用其他 Cloink 部署。</string>
+    <string name="fragment_firstinstall_txt">默认连接到 https://cloink.4w.ink。您可以在“更换服务器”中使用其他 Cloink 部署。</string>
     <string name="fragment_firstinstall_continue">继续</string>
     <string name="fragment_firstinstall_desc_logo">Cloink 标志</string>
     <string name="fragment_firstinstall_androidtv_beta">Android TV 支持目前处于测试阶段，部分功能可能无法正常工作。</string>
@@ -49,7 +49,7 @@
     <string name="networks_desc_exit_node">出口节点</string>
 
     <string name="change_server_title_server">服务器</string>
-    <string name="change_server_hint">https://one.4w.ink</string>
+    <string name="change_server_hint">https://cloink.4w.ink</string>
     <string name="change_server_setup_key">使用安装密钥添加此设备</string>
     <string name="change_server_setup_key_hint">"0EF79C2F-DEE1-419B-BFC8-1BF529332998"</string>
     <string name="change_server_error_invalid_setup_key">安装密钥格式无效</string>

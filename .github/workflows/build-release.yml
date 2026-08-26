@@ -21,6 +21,7 @@ jobs:
       CLOINK_UPLOAD_KEY_ALIAS: ${{ secrets.CLOINK_UPLOAD_KEY_ALIAS }}
       CLOINK_UPLOAD_KEY_PASSWORD: ${{ secrets.CLOINK_UPLOAD_KEY_PASSWORD }}
       CLOINK_UPLOAD_STORE_PASSWORD: ${{ secrets.CLOINK_UPLOAD_STORE_PASSWORD }}
+      GOOGLE_JSON: ${{ secrets.GOOGLE_JSON }}
     outputs:
       apk_path: ${{ steps.build.outputs.apk_path }}
       bundle_path: ${{ steps.build.outputs.bundle_path }}
@@ -37,8 +38,9 @@ jobs:
           echo "version_name=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: Write google-services.json
+        if: ${{ env.GOOGLE_JSON != '' }}
         run: |
-          echo "${{ secrets.GOOGLE_JSON }}" | base64 -d > app/google-services.json
+          echo "$GOOGLE_JSON" | base64 -d > app/google-services.json
 
       - name: Write keystore file
         run: |

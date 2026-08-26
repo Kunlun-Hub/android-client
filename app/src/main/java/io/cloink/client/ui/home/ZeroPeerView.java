@@ -10,7 +10,7 @@ import io.cloink.client.databinding.LayoutZeroPeerBinding;
 class ZeroPeerView {
     public static void setupLearnWhyClick(LayoutZeroPeerBinding binding, Context context) {
         binding.btnLearnWhy.setOnClickListener(v -> {
-            String url = "https://one.4w.ink";
+            String url = "https://cloink.4w.ink";
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             context.startActivity(intent);
         });

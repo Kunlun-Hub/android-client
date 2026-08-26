@@ -33,7 +33,7 @@ $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;23.1.7779620"
 ```
 
 The application ID is `io.cloink.client`, and the default management server is
-`https://one.4w.ink`.
+`https://cloink.4w.ink`.
 
 This project is distributed under the GNU General Public License v3.0. See
 [LICENSE](LICENSE).

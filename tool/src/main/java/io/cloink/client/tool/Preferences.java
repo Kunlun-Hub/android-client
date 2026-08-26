@@ -39,6 +39,6 @@ public class Preferences {
     }
 
     public static String defaultServer() {
-        return "https://one.4w.ink";
+        return "https://cloink.4w.ink";
     }
 }

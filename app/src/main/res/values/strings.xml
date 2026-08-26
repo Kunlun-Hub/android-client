@@ -19,7 +19,7 @@
     <string name="main_desc_bg_mask">background mask</string>
     <string name="main_desc_connect">connect-disconnect</string>
 
-    <string name="fragment_firstinstall_txt">By default, this app connects to https://one.4w.ink. You can select Change Server to use another Cloink deployment.</string>
+    <string name="fragment_firstinstall_txt">By default, this app connects to https://cloink.4w.ink. You can select Change Server to use another Cloink deployment.</string>
     <string name="fragment_firstinstall_continue">Continue</string>
     <string name="fragment_firstinstall_desc_logo">Cloink logo</string>
     <string name="fragment_firstinstall_androidtv_beta">Android TV support is currently in beta. Some features may not work as expected.</string>
@@ -51,7 +51,7 @@
     <string name="networks_desc_exit_node">exit node</string>
 
     <string name="change_server_title_server">Server</string>
-    <string name="change_server_hint">https://one.4w.ink</string>
+    <string name="change_server_hint">https://cloink.4w.ink</string>
     <string name="change_server_setup_key">Add this device with a setup key</string>
     <string name="change_server_setup_key_hint">"0EF79C2F-DEE1-419B-BFC8-1BF529332998"</string>
     <string name="change_server_error_invalid_setup_key">Invalid setup key format</string>

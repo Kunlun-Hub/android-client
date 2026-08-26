@@ -482,7 +482,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void openDocs() {
-        String url = "https://one.4w.ink";
+        String url = "https://cloink.4w.ink";
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         startActivity(intent);
     }

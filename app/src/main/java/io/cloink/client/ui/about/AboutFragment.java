@@ -52,7 +52,7 @@ public class AboutFragment extends Fragment {
     }
 
     public void onPrivacyClick(View view) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://one.4w.ink"));
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://cloink.4w.ink"));
         startActivity(intent);
     }
 

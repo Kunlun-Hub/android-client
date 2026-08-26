@@ -86,7 +86,7 @@ public class PreferencesInstrumentedTest {
 
     @Test
     public void shouldReturnCorrectDefaultServer() {
-        final var defaultServer = "https://one.4w.ink";
+        final var defaultServer = "https://cloink.4w.ink";
 
         Assert.assertEquals(defaultServer, Preferences.defaultServer());
     }
