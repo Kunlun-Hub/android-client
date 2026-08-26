@@ -1,6 +1,12 @@
 name: build release
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Existing release tag to build and upload"
+        required: true
+        type: string
   release:
     types: [published]
 
@@ -34,7 +40,12 @@ jobs:
       - name: Get version
         id: version
         run: |
-          TAG_NAME=${{ github.event.release.tag_name }}
+          TAG_NAME="${{ github.event.release.tag_name || inputs.version }}"
+          if [[ ! "$TAG_NAME" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::invalid release version: '$TAG_NAME'"
+            exit 1
+          fi
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "version_name=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: Write google-services.json
@@ -98,4 +109,4 @@ jobs:
           files: |
             ${{ steps.build.outputs.apk_path }}
             ${{ steps.build.outputs.bundle_path }}
-          tag_name: ${{ github.event.release.tag_name }}
+          tag_name: ${{ steps.version.outputs.tag_name }}
