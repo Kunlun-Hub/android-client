@@ -234,6 +234,15 @@ class EngineRestarter implements NetworkToggleListener {
         }
 
         @Override
+        public void onStateChanged(long state) {
+            try {
+                delegate.onStateChanged(state);
+            } catch (Exception e) {
+                Log.w(LOGTAG, "delegate onStateChanged failed: " + e.getMessage());
+            }
+        }
+
+        @Override
         public void onConnecting() {
             try {
                 delegate.onConnecting();

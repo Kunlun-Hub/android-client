@@ -558,6 +558,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     ConnectionListener connectionListener = new ConnectionListener() {
         @Override
+        public void onStateChanged(long state) {
+            // The core still invokes the legacy per-state callbacks below.
+        }
+
+        @Override
         public synchronized void onAddressChanged(String fqdn, String ip) {
             lastFqdn = fqdn;
             lastIp = ip;
