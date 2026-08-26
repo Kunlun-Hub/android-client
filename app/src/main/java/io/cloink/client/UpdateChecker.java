@@ -1,6 +1,7 @@
 package io.cloink.client;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.util.Log;
 
@@ -26,11 +27,13 @@ final class UpdateChecker {
         }
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
+                PackageInfo packageInfo = activity.getPackageManager()
+                        .getPackageInfo(activity.getPackageName(), 0);
                 JSONObject release = new JSONObject(
                         Android.latestSignedRelease("android", "universal"));
                 String availableVersion = release.getString("version");
                 String downloadUrl = release.getString("downloadUrl");
-                if (!isNewer(availableVersion, BuildConfig.VERSION_NAME)) {
+                if (!isNewer(availableVersion, packageInfo.versionName)) {
                     return;
                 }
                 activity.runOnUiThread(() -> showPrompt(
