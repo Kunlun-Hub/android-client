@@ -1,2 +1,2 @@
 configurations.maybeCreate("default")
-artifacts.add("default", file('netbird.aar'))
+artifacts.add("default", file('cloink.aar'))

@@ -1,0 +1,5 @@
+<resources>
+    <string name="service_name">Cloink</string>
+    <string name="fg_notification_channel_name">Cloink 服务</string>
+    <string name="fg_notification_text">服务正在运行</string>
+</resources>

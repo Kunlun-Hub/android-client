@@ -128,7 +128,7 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <LinearLayout
-            android:id="@+id/btn_use_netbird"
+            android:id="@+id/btn_use_cloink"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -148,7 +148,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:contentDescription="@string/fragment_firstinstall_desc_logo"
-                android:src="@drawable/ic_netbird_btn"
+                android:src="@drawable/ic_cloink_btn"
                 android:layout_marginEnd="8dp" />
 
             <TextView

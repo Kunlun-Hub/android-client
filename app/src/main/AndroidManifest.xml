@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <permission
-        android:name="io.netbird.permission.NOTIFICATION"
+        android:name="io.cloink.permission.NOTIFICATION"
         android:protectionLevel="signature" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -28,7 +28,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.NetBird"
+        android:theme="@style/Theme.Cloink"
         tools:targetApi="31">
 
         <activity
@@ -36,7 +36,7 @@
             android:launchMode="singleTask"
             android:exported="true"
             android:windowSoftInputMode="adjustPan"
-            android:theme="@style/Theme.NetBird.NoActionBar">
+            android:theme="@style/Theme.Cloink.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -46,9 +46,9 @@
         </activity>
 
         <service
-            android:name=".NetbirdTileService"
+            android:name=".CloinkTileService"
             android:exported="true"
-            android:icon="@drawable/ic_netbird_tile"
+            android:icon="@drawable/ic_cloink_tile"
             android:label="@string/quick_settings_tile_label"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>

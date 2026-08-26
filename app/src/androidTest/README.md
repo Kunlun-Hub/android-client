@@ -22,8 +22,8 @@ adb install -r -t app/build/outputs/apk/debug/app-debug.apk
 adb install -r -t app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
 
 # 3. Run the test directly via adb
-adb shell am instrument -w -e class io.netbird.client.NetworkConnectivityStressTest \
-  io.netbird.client.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class io.cloink.client.NetworkConnectivityStressTest \
+  io.cloink.client.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
 > **Note**: Do not use `./gradlew connectedAndroidTest` — Gradle's Unified Test Platform

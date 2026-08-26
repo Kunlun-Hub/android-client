@@ -10,14 +10,14 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.NetBird.AppBarOverlay">
+        android:theme="@style/Theme.Cloink.AppBarOverlay">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/nb_bg"
-            app:popupTheme="@style/Theme.NetBird.PopupOverlay" />
+            app:popupTheme="@style/Theme.Cloink.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

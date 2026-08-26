@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: android-release
     env:
-      NETBIRD_UPLOAD_KEY_ALIAS: ${{ secrets.NETBIRD_UPLOAD_KEY_ALIAS }}
-      NETBIRD_UPLOAD_KEY_PASSWORD: ${{ secrets.NETBIRD_UPLOAD_KEY_PASSWORD }}
-      NETBIRD_UPLOAD_STORE_PASSWORD: ${{ secrets.NETBIRD_UPLOAD_STORE_PASSWORD }}
+      CLOINK_UPLOAD_KEY_ALIAS: ${{ secrets.CLOINK_UPLOAD_KEY_ALIAS }}
+      CLOINK_UPLOAD_KEY_PASSWORD: ${{ secrets.CLOINK_UPLOAD_KEY_PASSWORD }}
+      CLOINK_UPLOAD_STORE_PASSWORD: ${{ secrets.CLOINK_UPLOAD_STORE_PASSWORD }}
     outputs:
       apk_path: ${{ steps.build.outputs.apk_path }}
       bundle_path: ${{ steps.build.outputs.bundle_path }}
@@ -43,7 +43,7 @@ jobs:
       - name: Write keystore file
         run: |
           echo "${{ secrets.GPLAY_KEYSTORE }}" | base64 -d > gplay.keystore
-          echo "NETBIRD_UPLOAD_STORE_FILE=$GITHUB_WORKSPACE/gplay.keystore" >> $GITHUB_ENV
+          echo "CLOINK_UPLOAD_STORE_FILE=$GITHUB_WORKSPACE/gplay.keystore" >> $GITHUB_ENV
 
       # Must stay identical to the Compute version code step in the sibling
       # workflow. build-release.yml and build-snapshot.yml feed the same Play

@@ -1,7 +1,7 @@
 <!--suppress AndroidDomInspection -->
 <resources>
     <!-- Base application theme. -->
-    <style name="Theme.NetBird" parent="Theme.MaterialComponents.Light.DarkActionBar">
+    <style name="Theme.Cloink" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/nb_orange</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
@@ -25,17 +25,17 @@
         <item name="nbTabBackground">@color/nb_gray_bg</item>
     </style>
 
-    <style name="Theme.NetBird.NoActionBar">
+    <style name="Theme.Cloink.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Theme.NetBird.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+    <style name="Theme.Cloink.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="colorPrimary">@color/nb_gray_dark</item>
         <item name="android:textColorPrimary">@color/nb_orange</item>
     </style>
 
-    <style name="Theme.NetBird.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Theme.Cloink.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <!-- for peers fragment -->
     <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">

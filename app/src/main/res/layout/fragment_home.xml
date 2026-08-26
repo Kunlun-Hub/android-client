@@ -127,7 +127,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:text="budafoki.netbird.cloud" />
+        tools:text="device.one.4w.ink" />
 
     <TextView
         android:id="@+id/text_network_address"

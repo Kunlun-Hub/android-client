@@ -4,7 +4,7 @@ plugins {
 
 android {
 
-    namespace = "io.netbird.client.tool"
+    namespace = "io.cloink.client.tool"
     compileSdk = rootProject.extra["compileSdkVersion"] as Int
 
     defaultConfig {

@@ -9,7 +9,7 @@ three jobs: `build-debug` produces the AAR and a debug APK/AAB, then
 `unit-tests` and `instrumented-tests` download that AAR and run against it, the
 latter on an emulator.
 
-Its product is a pass/fail signal, plus the `netbird-aar` artifact that the two
+Its product is a pass/fail signal, plus the `cloink-aar` artifact that the two
 test jobs consume. The debug APK it uploads is a convenience for humans; nothing
 in CI reads it.
 
@@ -44,7 +44,7 @@ the shared counter, so it is not something to run per pull request.
 | **Signing key** | default Android debug keystore | Play upload keystore (`gplay.keystore`) | Play upload keystore (`gplay.keystore`) |
 | **Firebase Crashlytics + Analytics** | **absent** | present | present |
 | Runs tests | yes (unit + instrumented) | no | no |
-| Artifact | `debug-artifacts-<name>`, 3 days; `netbird-aar`, 1 day | attached to the GitHub release | `snapshot-<sha>`, 14 days |
+| Artifact | `debug-artifacts-<name>`, 3 days; `cloink-aar`, 1 day | attached to the GitHub release | `snapshot-<sha>`, 14 days |
 | Permissions | `contents: read` | `contents: write`, `actions: read` | `contents: read`, `actions: read` |
 | Concurrency group | none | `android-version-code-lock` | `android-version-code-lock` |
 

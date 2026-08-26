@@ -20,10 +20,10 @@ fun getPropertyOrEnv(propertyName: String, envName: String = propertyName): Stri
 android {
     signingConfigs {
         create("release") {
-            val storeFile = getPropertyOrEnv("NETBIRD_UPLOAD_STORE_FILE")
-            val storePassword = getPropertyOrEnv("NETBIRD_UPLOAD_STORE_PASSWORD")
-            val keyAlias = getPropertyOrEnv("NETBIRD_UPLOAD_KEY_ALIAS")
-            val keyPassword = getPropertyOrEnv("NETBIRD_UPLOAD_KEY_PASSWORD")
+            val storeFile = getPropertyOrEnv("CLOINK_UPLOAD_STORE_FILE")
+            val storePassword = getPropertyOrEnv("CLOINK_UPLOAD_STORE_PASSWORD")
+            val keyAlias = getPropertyOrEnv("CLOINK_UPLOAD_KEY_ALIAS")
+            val keyPassword = getPropertyOrEnv("CLOINK_UPLOAD_KEY_PASSWORD")
 
             if (storeFile != null) {
                 this.storeFile = file(storeFile)
@@ -34,11 +34,11 @@ android {
         }
     }
 
-    namespace = "io.netbird.client"
+    namespace = "io.cloink.client"
     compileSdk = rootProject.extra["compileSdkVersion"] as Int
 
     defaultConfig {
-        applicationId = "io.netbird.client"
+        applicationId = "io.cloink.client"
         minSdk = rootProject.extra["minSdkVersion"] as Int
         targetSdk = rootProject.extra["targetSdkVersion"] as Int
         versionCode = rootProject.extra["appVersionCode"] as Int

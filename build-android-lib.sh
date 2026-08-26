@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script to build NetBird mobile bindings using gomobile
+# Script to build Cloink mobile bindings using gomobile
 # Usage: ./script.sh [version]
 #
 # Version resolution (first match wins):
@@ -121,9 +121,9 @@ echo "Using version: $version"
 ensure_gomobile_tools
 
 CGO_ENABLED=0 gomobile bind \
-  -o "$app_path/gomobile/netbird.aar" \
-  -javapkg=io.netbird.gomobile \
-  -ldflags="-linkmode=external -extldflags=-Wl,-z,max-page-size=16384 -checklinkname=0 -X golang.zx2c4.com/wireguard/ipc.socketDirectory=/data/data/io.netbird.client/cache/wireguard -X github.com/netbirdio/netbird/version.version=$version" \
+  -o "$app_path/gomobile/cloink.aar" \
+  -javapkg=io.cloink.gomobile \
+  -ldflags="-linkmode=external -extldflags=-Wl,-z,max-page-size=16384 -checklinkname=0 -X golang.zx2c4.com/wireguard/ipc.socketDirectory=/data/data/io.cloink.client/cache/wireguard -X github.com/netbirdio/netbird/version.version=$version" \
   "$(pwd)/client/android"
 
 cd - > /dev/null

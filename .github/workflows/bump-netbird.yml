@@ -1,10 +1,10 @@
-name: Bump netbird submodule
+name: Bump Cloink server core
 
 on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'NetBird release tag (e.g. v0.30.0)'
+        description: 'Cloink release tag (e.g. v0.30.0)'
         required: true
         type: string
 
@@ -23,13 +23,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.NETBIRD_DEV_BOT_GITHUB_TOKEN }}
+          token: ${{ github.token }}
           fetch-depth: 0
 
       - name: Configure git
         run: |
-          git config --global user.email "dev@netbird.io"
-          git config --global user.name "netbirddev"
+          git config --global user.email "ci@cloink.local"
+          git config --global user.name "cloink-ci"
 
       - name: Check out tag in submodule
         run: |
@@ -42,7 +42,7 @@ jobs:
         run: |
           version="${{ inputs.tag }}"
           version="${version#v}"
-          branch="bump-netbird-${version}"
+          branch="bump-cloink-core-${version}"
           echo "branch=${branch}" >> "$GITHUB_OUTPUT"
 
           git checkout -b "${branch}"
@@ -53,16 +53,16 @@ jobs:
             exit 0
           fi
           echo "no_changes=false" >> "$GITHUB_OUTPUT"
-          git commit -m "Bump netbird submodule to ${{ inputs.tag }}"
+          git commit -m "Bump Cloink server core to ${{ inputs.tag }}"
           git push --set-upstream origin "${branch}"
 
       - name: Create pull request
         if: steps.branch.outputs.no_changes != 'true'
         env:
-          GH_TOKEN: ${{ secrets.NETBIRD_DEV_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh pr create \
             --base main \
             --head "${{ steps.branch.outputs.branch }}" \
-            --title "Bump netbird submodule to ${{ inputs.tag }}" \
-            --body "Automated submodule bump triggered by netbird release ${{ inputs.tag }}."
+            --title "Bump Cloink server core to ${{ inputs.tag }}" \
+            --body "Automated server-core bump for Cloink release ${{ inputs.tag }}."

@@ -46,7 +46,7 @@ jobs:
       - name: Upload AAR artifact for tests
         uses: actions/upload-artifact@v4
         with:
-          name: netbird-aar
+          name: cloink-aar
           path: ${{ steps.build.outputs.aar_path }}
           retention-days: 1
 
@@ -69,7 +69,7 @@ jobs:
       - name: Download AAR artifact
         uses: actions/download-artifact@v4
         with:
-          name: netbird-aar
+          name: cloink-aar
           path: gomobile
 
       - name: Run unit tests
@@ -104,7 +104,7 @@ jobs:
       - name: Download AAR artifact
         uses: actions/download-artifact@v4
         with:
-          name: netbird-aar
+          name: cloink-aar
           path: gomobile
 
       - name: Enable KVM group perms
@@ -123,7 +123,7 @@ jobs:
           disk-size: 4096M
           heap-size: 512M
           disable-animations: true
-          script: ./gradlew connectedDebugAndroidTest --no-daemon -Pandroid.testInstrumentationRunnerArguments.notClass=io.netbird.client.NetworkConnectivityStressTest
+          script: ./gradlew connectedDebugAndroidTest --no-daemon -Pandroid.testInstrumentationRunnerArguments.notClass=io.cloink.client.NetworkConnectivityStressTest
 
       - name: Upload test results
         if: always()

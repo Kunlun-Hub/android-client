@@ -1,0 +1,141 @@
+<resources>
+    <string name="app_name">Cloink 云链</string>
+    <string name="navigation_drawer_open">打开导航菜单</string>
+    <string name="navigation_drawer_close">关闭导航菜单</string>
+    <string name="nav_header_title">Cloink 云链</string>
+    <string name="nav_header_subtitle">安全的私有网络</string>
+    <string name="nav_header_desc">Cloink 导航栏</string>
+    <string name="action_settings">设置</string>
+    <string name="quick_settings_tile_label">Cloink</string>
+
+    <string name="menu_advanced">高级设置</string>
+    <string name="menu_about">关于</string>
+    <string name="menu_docs">文档</string>
+    <string name="menu_change_server">更换服务器</string>
+    <string name="menu_profiles">配置档案</string>
+    <string name="menu_troubleshoot">故障排查</string>
+
+    <string name="main_status_disconnected">未连接</string>
+    <string name="main_desc_bg_mask">背景遮罩</string>
+    <string name="main_desc_connect">连接或断开</string>
+
+    <string name="fragment_firstinstall_txt">默认连接到 https://one.4w.ink。您可以在“更换服务器”中使用其他 Cloink 部署。</string>
+    <string name="fragment_firstinstall_continue">继续</string>
+    <string name="fragment_firstinstall_desc_logo">Cloink 标志</string>
+    <string name="fragment_firstinstall_androidtv_beta">Android TV 支持目前处于测试阶段，部分功能可能无法正常工作。</string>
+
+    <string name="about_version">版本：&#160;</string>
+    <string name="about_license"><u>许可协议</u></string>
+    <string name="about_privacy_poliy"><u>隐私政策</u></string>
+    <string name="about_rights">© 2026 Cloink。保留所有权利。</string>
+
+    <string name="zero_peers_no_machines">当前没有可以连接的设备。</string>
+    <string name="zero_peers_btn_learn_why">了解原因</string>
+
+    <string name="btn_close">关闭</string>
+    <string name="peers_connected"><![CDATA[已连接 <b>%1$d</b> / <b>%2$d</b> 台设备]]></string>
+    <string name="peers_hint_search_peers">搜索设备</string>
+    <string name="peer_filter_all">全部</string>
+    <string name="peer_filter_idle">空闲</string>
+    <string name="peer_filter_connecting">连接中</string>
+    <string name="peer_filter_connected">已连接</string>
+    <string name="peers_clipboard_copy_ip">复制 IP</string>
+    <string name="peers_clipboard_copy_ipv6">复制 IPv6</string>
+    <string name="peers_clipboard_copy_fqdn">复制 FQDN</string>
+    <string name="peers_desc_filter">筛选</string>
+
+    <string name="resources_connected"><![CDATA[已连接 <b>%1$d</b> / <b>%2$d</b> 个资源]]></string>
+    <string name="networks_hint_search_networks">搜索资源</string>
+    <string name="networks_desc_exit_node">出口节点</string>
+
+    <string name="change_server_title_server">服务器</string>
+    <string name="change_server_hint">https://one.4w.ink</string>
+    <string name="change_server_setup_key">使用安装密钥添加此设备</string>
+    <string name="change_server_setup_key_hint">"0EF79C2F-DEE1-419B-BFC8-1BF529332998"</string>
+    <string name="change_server_error_invalid_setup_key">安装密钥格式无效</string>
+    <string name="change_server_btn">更换</string>
+    <string name="change_server_verifying">正在验证…</string>
+    <string name="change_server_btn_reset">使用 Cloink 服务器</string>
+    <string name="change_server_alert_title">更换服务器</string>
+    <string name="change_server_alert_yes">确定</string>
+    <string name="change_server_alert_cancel">取消</string>
+    <string name="change_server_alert_desc">更换服务器将清除本地配置，并断开此设备与当前 Cloink 账户的连接。</string>
+    <string name="change_server_success_title">服务器已更换</string>
+    <string name="change_server_success_desc">点击连接按钮继续</string>
+    <string name="change_server_success_cloe">确定</string>
+    <string name="change_server_success_icon">成功图标</string>
+
+    <string name="advanced_title_presharedkey">添加预共享密钥</string>
+    <string name="advanced_details">仅与使用相同密钥的设备通信。</string>
+    <string name="advanced_hint">输入预共享密钥</string>
+    <string name="advanced_save">保存</string>
+    <string name="advanced_presharedkey_saved_success">预共享密钥已保存</string>
+    <string name="advanced_presharedkey_save_error">保存预共享密钥失败</string>
+    <string name="advanced_tracelog">启用跟踪日志级别</string>
+    <string name="advanced_share_logs">分享日志</string>
+    <string name="troubleshoot_debug_bundle">上传调试包</string>
+    <string name="troubleshoot_anonymize">匿名化敏感数据</string>
+    <string name="advanced_rosenpass">启用 Rosenpass</string>
+    <string name="advanced_rosenpass_permissive">启用 Rosenpass 宽松模式</string>
+    <string name="advanced_title_network_security">网络与安全</string>
+    <string name="advanced_disable_client_routes">禁用客户端路由</string>
+    <string name="advanced_disable_client_routes_desc">阻止此设备处理管理服务下发的客户端路由</string>
+    <string name="advanced_disable_server_routes">禁用服务端路由</string>
+    <string name="advanced_disable_server_routes_desc">阻止此设备充当服务端路由的路由器</string>
+    <string name="advanced_disable_dns">禁用 DNS</string>
+    <string name="advanced_disable_dns_desc">禁用此设备上的 Cloink DNS 配置</string>
+    <string name="advanced_disable_firewall">禁用防火墙</string>
+    <string name="advanced_disable_firewall_desc">禁用 Cloink 防火墙</string>
+    <string name="advanced_disable_ipv6">禁用 IPv6</string>
+    <string name="advanced_disable_ipv6_desc">禁用隧道接口的 IPv6 覆盖网络地址</string>
+    <string name="advanced_allow_ssh">启用 SSH</string>
+    <string name="advanced_allow_ssh_desc">允许通过 SSH 连接此设备</string>
+    <string name="advanced_block_inbound">阻止入站连接</string>
+    <string name="advanced_block_inbound_desc">阻止所有到此设备和路由网络的入站连接，此设置优先于管理服务下发的策略</string>
+
+    <string name="desc_logo">Cloink 标志</string>
+    <string name="desc_exclamation_mark">感叹号</string>
+    <string name="desc_peers_empty">空设备列表</string>
+    <string name="dialog_always_on_desc"><![CDATA[另一款 VPN 应用已启用“始终开启”。要启用 Cloink，请前往<b>网络和互联网设置</b> → <b>高级</b>，打开列表中各 VPN 应用的设置，并关闭其他应用的“始终开启”。]]></string>
+
+    <string name="advanced_theme_system">跟随系统</string>
+    <string name="advanced_theme_title">主题模式</string>
+    <string name="advanced_theme_dark">深色</string>
+    <string name="advanced_theme_light">亮色</string>
+    <string name="advanced_theme_desc">选择应用外观模式</string>
+    <string name="advanced_force_relay_conn">强制使用中继</string>
+    <string name="advanced_force_relay_conn_desc">连接设备时强制通过中继传输</string>
+    <string name="exclamation_mark">感叹号</string>
+    <string name="reconnectionNeededWarningMessage">应用此设置需要重新连接。</string>
+    <string name="change_server_setup_key_warning">不建议为用户设备使用安装密钥。使用带 MFA 的 SSO 可提供更强的安全性、正确的用户设备关联和定期重新认证。</string>
+    <string name="change_server_error_invalid_server_url">URL 格式无效</string>
+    <string name="device_code">设备代码：%s</string>
+    <string name="tv_menu_hint">长按方向键左键打开菜单</string>
+
+    <string name="profile_default">配置档案：默认</string>
+    <string name="profile_tap_to_manage">点击管理配置档案</string>
+    <string name="profiles_title">配置档案</string>
+    <string name="profiles_active">当前使用</string>
+    <string name="profiles_add">添加配置档案</string>
+    <string name="profiles_switch">切换</string>
+    <string name="profiles_logout">退出登录</string>
+    <string name="profiles_remove">删除</string>
+    <string name="profiles_dialog_add_title">新建配置档案</string>
+    <string name="profiles_dialog_add_message">输入配置档案名称：</string>
+    <string name="profiles_dialog_add_hint">配置档案名称</string>
+    <string name="profiles_dialog_switch_title">切换配置档案</string>
+    <string name="profiles_dialog_switch_message">切换到配置档案“%s”？\n\n当前连接将断开。</string>
+    <string name="profiles_dialog_logout_title">退出配置档案</string>
+    <string name="profiles_dialog_logout_message">退出配置档案“%s”？\n\n再次使用时需要重新认证。</string>
+    <string name="profiles_dialog_remove_title">删除配置档案</string>
+    <string name="profiles_dialog_remove_message">确定删除配置档案“%s”？\n\n此操作无法撤销。</string>
+    <string name="profiles_error_empty_name">配置档案名称不能为空</string>
+    <string name="profiles_error_invalid_name">配置档案名称只能包含字母、数字、连字符和下划线</string>
+    <string name="profiles_error_already_exists">配置档案“%s”已存在</string>
+    <string name="profiles_error_cannot_remove_active">无法删除当前使用的配置档案，请先切换到其他档案</string>
+    <string name="profiles_error_cannot_remove_default">无法删除默认配置档案</string>
+    <string name="profiles_success_added">配置档案“%s”已创建</string>
+    <string name="profiles_success_switched">已切换到配置档案“%s”</string>
+    <string name="profiles_success_logged_out">已退出配置档案“%s”</string>
+    <string name="profiles_success_removed">配置档案“%s”已删除</string>
+</resources>

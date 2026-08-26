@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Netbird"
+rootProject.name = "Cloink"
 include(":app")
 include(":gomobile")
 include(":tool")

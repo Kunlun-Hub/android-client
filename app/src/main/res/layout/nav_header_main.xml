@@ -20,6 +20,6 @@
         android:paddingEnd="40dp"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        app:srcCompat="@drawable/nb_nav_logo" />
+        app:srcCompat="@drawable/cloink_nav_logo" />
 
 </LinearLayout>

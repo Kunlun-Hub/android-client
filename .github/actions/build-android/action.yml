@@ -19,8 +19,8 @@ outputs:
     description: 'Path to the built AAB bundle'
     value: ${{ steps.build-info.outputs.bundle_path }}
   aar_path:
-    description: 'Path to the built NetBird Go library AAR'
-    value: gomobile/netbird.aar
+    description: 'Path to the built Cloink Go library AAR'
+    value: gomobile/cloink.aar
 
 runs:
   using: 'composite'
@@ -121,7 +121,7 @@ runs:
         go install "golang.org/x/mobile/cmd/gomobile@$version"
         go install "golang.org/x/mobile/cmd/gobind@$version"
 
-    - name: Build NetBird Go library
+    - name: Build Cloink Go library
       shell: bash
       run: PATH=$PATH:$(go env GOPATH)/bin bash -x build-android-lib.sh
 
@@ -136,13 +136,13 @@ runs:
       run: |
         set -e
         BUILD_TYPE_FOLDER="${{ inputs.build_type }}"
-        mv app/build/outputs/apk/${BUILD_TYPE_FOLDER}/app-${BUILD_TYPE_FOLDER}.apk app/build/outputs/apk/${BUILD_TYPE_FOLDER}/netbird-${{ inputs.version_name }}.apk
-        mv app/build/outputs/bundle/${BUILD_TYPE_FOLDER}/app-${BUILD_TYPE_FOLDER}.aab app/build/outputs/bundle/${BUILD_TYPE_FOLDER}/netbird-${{ inputs.version_name }}.aab
+        mv app/build/outputs/apk/${BUILD_TYPE_FOLDER}/app-${BUILD_TYPE_FOLDER}.apk app/build/outputs/apk/${BUILD_TYPE_FOLDER}/cloink-${{ inputs.version_name }}.apk
+        mv app/build/outputs/bundle/${BUILD_TYPE_FOLDER}/app-${BUILD_TYPE_FOLDER}.aab app/build/outputs/bundle/${BUILD_TYPE_FOLDER}/cloink-${{ inputs.version_name }}.aab
 
     - name: Set build info
       id: build-info
       shell: bash
       run: |
         BUILD_TYPE="${{ inputs.build_type }}"
-        echo "apk_path=app/build/outputs/apk/${BUILD_TYPE}/netbird-${{ inputs.version_name }}.apk" >> $GITHUB_OUTPUT
-        echo "bundle_path=app/build/outputs/bundle/${BUILD_TYPE}/netbird-${{ inputs.version_name }}.aab" >> $GITHUB_OUTPUT
+        echo "apk_path=app/build/outputs/apk/${BUILD_TYPE}/cloink-${{ inputs.version_name }}.apk" >> $GITHUB_OUTPUT
+        echo "bundle_path=app/build/outputs/bundle/${BUILD_TYPE}/cloink-${{ inputs.version_name }}.aab" >> $GITHUB_OUTPUT
