@@ -34,6 +34,10 @@
     <string name="zero_peers_btn_learn_why">Learn why</string>
 
     <string name="btn_close">Close</string>
+    <string name="update_available_title">Cloink update available</string>
+    <string name="update_available_message">Version %1$s was signed and published by Cloink. Download it now?</string>
+    <string name="update_download">Download</string>
+    <string name="update_later">Later</string>
     <string name="peers_connected"><![CDATA[<b>%1$d</b> <b>of</b> <b>%2$d</b> Peers connected]]></string>
     <string name="peers_hint_search_peers">Search peers</string>
     <string name="peer_filter_all">All</string>

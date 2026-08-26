@@ -33,6 +33,10 @@
     <string name="zero_peers_btn_learn_why">了解原因</string>
 
     <string name="btn_close">关闭</string>
+    <string name="update_available_title">Cloink 有可用更新</string>
+    <string name="update_available_message">Cloink 已签名并发布版本 %1$s。是否现在下载？</string>
+    <string name="update_download">下载</string>
+    <string name="update_later">稍后</string>
     <string name="peers_connected"><![CDATA[已连接 <b>%1$d</b> / <b>%2$d</b> 台设备]]></string>
     <string name="peers_hint_search_peers">搜索设备</string>
     <string name="peer_filter_all">全部</string>
