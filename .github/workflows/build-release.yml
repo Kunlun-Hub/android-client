@@ -104,9 +104,11 @@ jobs:
           build_type: release
 
       - name: Upload files to existing release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            ${{ steps.build.outputs.apk_path }}
-            ${{ steps.build.outputs.bundle_path }}
-          tag_name: ${{ steps.version.outputs.tag_name }}
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: |
+          gh release upload "${{ steps.version.outputs.tag_name }}" \
+            "${{ steps.build.outputs.apk_path }}" \
+            "${{ steps.build.outputs.bundle_path }}" \
+            --repo "${{ github.repository }}" \
+            --clobber
