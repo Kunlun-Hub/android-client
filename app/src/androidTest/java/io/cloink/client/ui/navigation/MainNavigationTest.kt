@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.runtime.mutableIntStateOf
 import io.cloink.client.R
 import io.cloink.client.ui.theme.CloinkTheme
 import org.junit.Assert.assertEquals
@@ -34,18 +35,20 @@ class MainNavigationTest {
     fun topBarUsesMenuOnHomeAndBackElsewhere() {
         var menuCount = 0
         var backCount = 0
+        val destination = mutableIntStateOf(R.id.nav_home)
         composeRule.setContent {
             CloinkTheme(darkTheme = false) {
-                MainTopBar(R.id.nav_home, "", { menuCount++ }, { backCount++ })
+                MainTopBar(
+                    destination.intValue,
+                    if (destination.intValue == R.id.nav_home) "" else "About",
+                    { menuCount++ },
+                    { backCount++ },
+                )
             }
         }
         composeRule.onNodeWithText("Menu").performClick()
 
-        composeRule.setContent {
-            CloinkTheme(darkTheme = false) {
-                MainTopBar(R.id.nav_about, "About", { menuCount++ }, { backCount++ })
-            }
-        }
+        composeRule.runOnIdle { destination.intValue = R.id.nav_about }
         composeRule.onNodeWithText("About").assertIsDisplayed()
         composeRule.onNodeWithText("Back").performClick()
 
