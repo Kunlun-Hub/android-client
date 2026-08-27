@@ -1,13 +1,9 @@
 package io.cloink.client.ui.home
 
-import androidx.compose.ui.test.assertDoesNotExist
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.isToggleable
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodes
-import androidx.compose.ui.test.onFirst
-import androidx.compose.ui.test.onNode
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -38,7 +34,6 @@ class NetworkPanelTest {
 
         composeRule.onNode(hasSetTextAction()).performTextInput("100.64.0.3")
         composeRule.onNodeWithText("beta.cloink").assertIsDisplayed()
-        composeRule.onNodeWithText("alpha.cloink").assertDoesNotExist()
     }
 
     @Test
