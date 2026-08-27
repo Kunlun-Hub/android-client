@@ -48,7 +48,7 @@ class NetworkPanelTest {
 
         composeRule.onNodeWithText("Networks").performClick()
         composeRule.onNodeWithText("office").assertIsDisplayed()
-        composeRule.onAllNodes(isToggleable()).onFirst().performClick()
+        composeRule.onAllNodes(isToggleable())[0].performClick()
 
         composeRule.runOnIdle { assertEquals(route to true, selected) }
     }
