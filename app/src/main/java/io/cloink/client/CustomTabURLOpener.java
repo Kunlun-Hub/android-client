@@ -15,6 +15,7 @@ public class CustomTabURLOpener implements URLOpener {
     private static final String TAG = "CustomTabURLOpener";
     private final AppCompatActivity context;
     private final ActivityResultLauncher<Intent> customTabLauncher;
+    private final OnLaunchFailure launchFailureCallback;
 
     private boolean isOpened = false;
 
@@ -24,6 +25,7 @@ public class CustomTabURLOpener implements URLOpener {
 
     public CustomTabURLOpener(AppCompatActivity activity, OnLaunchFailure launchFailureCallback) {
         this.context = activity;
+        this.launchFailureCallback = launchFailureCallback;
 
         this.customTabLauncher = activity.registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), o -> {
