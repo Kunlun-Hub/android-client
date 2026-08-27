@@ -164,9 +164,12 @@ jobs:
           script: |
             test -n "$(find "$GITHUB_WORKSPACE/debug-artifacts" -name '*.apk' -print -quit)"
             adb install -r "$(find "$GITHUB_WORKSPACE/debug-artifacts" -name '*.apk' -print -quit)"
+            adb shell setprop log.tag.NBMainActivity VERBOSE
             adb logcat -c
             adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'io.cloink.client://oauth2/callback?code=test-code' -p io.cloink.client
             adb shell dumpsys activity activities | grep -F 'io.cloink.client/.MainActivity'
             sleep 3
-            adb logcat -d -s NBMainActivity:V '*:S' | grep -F 'Accepted OAuth callback intent'
-            adb logcat -d -s NBMainActivity:V '*:S' | grep -E 'Delivered OAuth callback|retrying callback delivery'
+            adb logcat -d > /tmp/oauth-callback.log
+            grep -F 'NBMainActivity' /tmp/oauth-callback.log
+            grep -F 'Accepted OAuth callback intent' /tmp/oauth-callback.log
+            grep -E 'Delivered OAuth callback|retrying callback delivery' /tmp/oauth-callback.log
