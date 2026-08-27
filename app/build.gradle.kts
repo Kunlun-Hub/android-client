@@ -103,7 +103,6 @@ dependencies {
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
     implementation(libs.browser)  // Added for CustomTabsIntent
-    implementation(libs.lottie)
     implementation(libs.zxing)
 
     if (hasGoogleServicesJson) {

@@ -64,7 +64,7 @@ class BottomDialogFragment : BottomSheetDialogFragment() {
         setOnShowListener {
             findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let { sheet ->
                 BottomSheetBehavior.from(sheet).apply {
-                    state = BottomSheetBehavior.STATE_EXPANDED
+                    this.state = BottomSheetBehavior.STATE_EXPANDED
                     skipCollapsed = true
                 }
                 sheet.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT

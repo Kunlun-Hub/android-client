@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/nav_home">
 
@@ -9,38 +8,32 @@
     <fragment
         android:id="@+id/nav_home"
         android:name="io.cloink.client.ui.home.HomeFragment"
-        android:label=""
-        tools:layout="@layout/fragment_home" />
+        android:label="" />
 
     <fragment
         android:id="@+id/nav_advanced"
         android:name="io.cloink.client.ui.advanced.AdvancedFragment"
-        android:label="@string/menu_advanced"
-        tools:layout="@layout/fragment_advanced" />
+        android:label="@string/menu_advanced" />
 
     <fragment
         android:id="@+id/nav_troubleshoot"
         android:name="io.cloink.client.ui.troubleshoot.TroubleshootFragment"
-        android:label="@string/menu_troubleshoot"
-        tools:layout="@layout/fragment_troubleshoot" />
+        android:label="@string/menu_troubleshoot" />
 
     <fragment
         android:id="@+id/nav_about"
         android:name="io.cloink.client.ui.about.AboutFragment"
-        android:label="@string/menu_about"
-        tools:layout="@layout/fragment_about" />
+        android:label="@string/menu_about" />
 
     <fragment
         android:id="@+id/nav_profiles"
         android:name="io.cloink.client.ui.profile.ProfilesFragment"
-        android:label="@string/menu_profiles"
-        tools:layout="@layout/fragment_profiles" />
+        android:label="@string/menu_profiles" />
 
     <fragment
         android:id="@+id/nav_change_server"
         android:name="io.cloink.client.ui.server.ChangeServerFragment"
-        android:label="@string/menu_change_server"
-        tools:layout="@layout/fragment_server">
+        android:label="@string/menu_change_server">
         <argument
             android:name="hideAlert"
             app:argType="boolean"
@@ -50,6 +43,5 @@
     <fragment
         android:id="@+id/firstInstallFragment"
         android:name="io.cloink.client.ui.fistinstall.FirstInstallFragment"
-        android:label="FirstInstall"
-        tools:layout="@layout/fragment_firstinstall" />
+        android:label="FirstInstall" />
 </navigation>
