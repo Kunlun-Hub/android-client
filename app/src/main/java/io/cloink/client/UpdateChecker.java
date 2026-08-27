@@ -5,14 +5,13 @@ import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.util.Log;
 
-import androidx.appcompat.app.AlertDialog;
-
 import org.json.JSONObject;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.cloink.gomobile.android.Android;
+import io.cloink.client.ui.dialog.ComposeDialogs;
 
 final class UpdateChecker {
     private static final String LOGTAG = "CloinkUpdateChecker";
@@ -53,18 +52,13 @@ final class UpdateChecker {
         if (activity.isFinishing() || activity.isDestroyed()) {
             return;
         }
-        new AlertDialog.Builder(activity)
-                .setTitle(R.string.update_available_title)
-                .setMessage(activity.getString(R.string.update_available_message, version))
-                .setNegativeButton(R.string.update_later, null)
-                .setPositiveButton(R.string.update_download, (dialog, which) -> {
-                    try {
-                        activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl)));
-                    } catch (Exception e) {
-                        Log.e(LOGTAG, "Failed to open signed update URL", e);
-                    }
-                })
-                .show();
+        ComposeDialogs.showUpdatePrompt(activity, version, () -> {
+            try {
+                activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(downloadUrl)));
+            } catch (Exception e) {
+                Log.e(LOGTAG, "Failed to open signed update URL", e);
+            }
+        });
     }
 
     static boolean isNewer(String available, String current) {

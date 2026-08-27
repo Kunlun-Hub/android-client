@@ -44,6 +44,7 @@
     <string name="zero_peers_btn_learn_why">Learn why</string>
 
     <string name="btn_close">Close</string>
+    <string name="always_on_title">VPN settings required</string>
     <string name="update_available_title">Cloink update available</string>
     <string name="update_available_message">Version %1$s was signed and published by Cloink. Download it now?</string>
     <string name="update_download">Download</string>
@@ -116,7 +117,6 @@
 
 
     <string name="desc_logo">Cloink logo</string>
-    <string name="desc_exclamation_mark">exclamation mark</string>
     <string name="desc_peers_empty">empty box</string>
 
     <string name="dialog_always_on_desc"><![CDATA[You have a VPN app that has Always On turned on. To enable the Cloink app, you first need to go to your <b>Network & Internet settings</b> → <b>Advanced</b> → Check the <b>gear icon</b> for all the apps listed here on this page. Disable Always On for the apps that are not Cloink.]]></string>
@@ -128,11 +128,12 @@
     <string name="advanced_theme_desc">Choose the app appearance mode.</string>
     <string name="advanced_force_relay_conn">Force relay connection</string>
     <string name="advanced_force_relay_conn_desc">Forces usage of relay when connecting to peers</string>
-    <string name="exclamation_mark">exclamation mark</string>
     <string name="reconnectionNeededWarningMessage">To apply the setting, you will need to reconnect.</string>
     <string name="change_server_setup_key_warning">Using setup keys for user devices is not recommended. SSO with MFA provides stronger security, proper user-device association, and periodic re-authentication.</string>
     <string name="change_server_error_invalid_server_url">Invalid URL format</string>
     <string name="device_code">Device Code: %s</string>
+    <string name="device_login_title">Sign in on another device</string>
+    <string name="qr_code_description">Sign-in QR code</string>
     <string name="tv_menu_hint">Hold left directional button to open the menu</string>
 
     <!-- Profile strings -->

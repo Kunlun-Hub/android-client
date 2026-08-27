@@ -10,12 +10,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -25,7 +22,6 @@ import java.util.List;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
@@ -39,6 +35,7 @@ import io.cloink.client.tool.RouteChangeListener;
 import io.cloink.client.tool.ServiceStateListener;
 import io.cloink.client.tool.VPNService;
 import io.cloink.client.ui.PreferenceUI;
+import io.cloink.client.ui.dialog.ComposeDialogs;
 import io.cloink.client.ui.navigation.MainDrawerController;
 import io.cloink.client.ui.navigation.MainTopBarController;
 import io.cloink.gomobile.android.ConnectionListener;
@@ -119,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
         topBarController = new MainTopBarController(
                 () -> binding.drawerLayout.openDrawer(GravityCompat.START),
                 () -> navController.popBackStack());
-        topBarController.install(binding.appBarMain.toolbar);
+        topBarController.install(binding.toolbar);
         drawerController = new MainDrawerController(this::navigateFromDrawer, this::openDocs, getVersionName());
         drawerController.install(binding.navView);
         updateProfileMenuItem();
@@ -135,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
                         binding.navView.setFocusableInTouchMode(false);
                         
                         if (!binding.navView.requestFocus()) {
-                            Log.d(LOGTAG, "NavigationView couldn't get focus, trying menu items");
+                            Log.d(LOGTAG, "Compose drawer couldn't get focus");
                         }
                     }, 100); // Delay to let drawer animation finish
                 }
@@ -305,13 +302,6 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
         }
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
 
     private void navigateFromDrawer(int id) {
         if (navController.getCurrentDestination() == null || navController.getCurrentDestination().getId() != id) {
@@ -528,41 +518,24 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
     }
 
     private void removeToolbarShadow() {
-        stateAnim = binding.appBarMain.appbar.getStateListAnimator();
-        binding.appBarMain.appbar.setStateListAnimator(null);
-        binding.appBarMain.appbar.setElevation(0f);
-        binding.appBarMain.toolbar.setElevation(0);
-        binding.appBarMain.toolbar.setBackground(new ColorDrawable(ContextCompat.getColor(this, R.color.nb_bg_home)));
+        stateAnim = binding.appbar.getStateListAnimator();
+        binding.appbar.setStateListAnimator(null);
+        binding.appbar.setElevation(0f);
+        binding.toolbar.setElevation(0);
+        binding.toolbar.setBackground(new ColorDrawable(ContextCompat.getColor(this, R.color.nb_bg_home)));
     }
 
     private void resetToolbar() {
         if(stateAnim!=null) {
-            binding.appBarMain.appbar.setStateListAnimator(stateAnim);
+            binding.appbar.setStateListAnimator(stateAnim);
         }
-        binding.appBarMain.appbar.setElevation(10f);
-        binding.appBarMain.toolbar.setElevation(0);
-        binding.appBarMain.toolbar.setBackground(new ColorDrawable(ContextCompat.getColor(this, R.color.nb_bg)));
+        binding.appbar.setElevation(10f);
+        binding.toolbar.setElevation(0);
+        binding.toolbar.setBackground(new ColorDrawable(ContextCompat.getColor(this, R.color.nb_bg)));
     }
 
     private void showAlwaysOnDialog(Runnable onDismissAction) {
-        final View dialogView = getLayoutInflater().inflate(R.layout.dialog_always_on, null);
-        final AlertDialog alertDialog = new AlertDialog.Builder(this)
-                .setView(dialogView)
-                .create();
-
-        // Set bold-formatted text using Html.fromHtml
-        TextView descriptionText = dialogView.findViewById(R.id.text_description);
-        descriptionText.setText(Html.fromHtml(getString(R.string.dialog_always_on_desc), Html.FROM_HTML_MODE_LEGACY));
-
-        dialogView.findViewById(R.id.btn_close).setOnClickListener(v -> alertDialog.dismiss());
-
-        alertDialog.setOnDismissListener(dialog -> {
-            if (onDismissAction != null) {
-                onDismissAction.run();
-            }
-        });
-
-        alertDialog.show();
+        ComposeDialogs.showAlwaysOn(this, onDismissAction);
     }
 
     ConnectionListener connectionListener = new ConnectionListener() {
