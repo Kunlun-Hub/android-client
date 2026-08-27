@@ -10,6 +10,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -71,6 +73,13 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
     private boolean isRunningOnTV = false;
     private boolean useDeviceCodeFlow = false;
     private String pendingAuthRedirect;
+    private int authRedirectDeliveryAttempts;
+    private static final int MAX_AUTH_REDIRECT_DELIVERY_ATTEMPTS = 40;
+    private static final long AUTH_REDIRECT_RETRY_DELAY_MS = 250L;
+    private static final String STATE_PENDING_AUTH_REDIRECT = "pendingAuthRedirect";
+    private static final String STATE_AUTH_REDIRECT_ATTEMPTS = "authRedirectDeliveryAttempts";
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private final Runnable authRedirectRetry = this::deliverPendingAuthRedirect;
 
     // Last known state for UI updates
     private ConnectionState lastKnownState = ConnectionState.UNKNOWN;
@@ -101,6 +110,11 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        if (savedInstanceState != null) {
+            pendingAuthRedirect = savedInstanceState.getString(STATE_PENDING_AUTH_REDIRECT);
+            authRedirectDeliveryAttempts = savedInstanceState.getInt(STATE_AUTH_REDIRECT_ATTEMPTS, 0);
+        }
 
         getSupportFragmentManager().setFragmentResultListener(
                 QrCodeDialog.RESULT_KEY,
@@ -173,14 +187,8 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
 
         if (!useDeviceCodeFlow) {
             urlOpener = new CustomTabURLOpener(this, () -> {
-                if (isSSOFinishedWell) {
-                    return;
-                }
-                if (mBinder == null) {
-                    return;
-                }
-
-                mBinder.stopEngine();
+                Log.e(LOGTAG, "Unable to open the browser for interactive SSO");
+                if (mBinder != null) mBinder.stopEngine();
             });
         } else {
             urlOpener = new URLOpener() {
@@ -277,6 +285,15 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
     }
 
     @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (pendingAuthRedirect != null) {
+            outState.putString(STATE_PENDING_AUTH_REDIRECT, pendingAuthRedirect);
+            outState.putInt(STATE_AUTH_REDIRECT_ATTEMPTS, authRedirectDeliveryAttempts);
+        }
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         Log.d(LOGTAG, "onStop");
@@ -294,6 +311,7 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
 
     @Override
     protected  void onDestroy() {
+        mainHandler.removeCallbacks(authRedirectRetry);
         super.onDestroy();
 
         if (mBinder != null) {
@@ -493,9 +511,15 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
         }
 
         pendingAuthRedirect = callback.toString();
+        authRedirectDeliveryAttempts = 0;
+        // singleTask reuses this Activity. Clear the consumed deep link so an
+        // Activity recreation cannot submit the same authorization code twice.
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.setData(null);
         if (urlOpener instanceof CustomTabURLOpener) {
             ((CustomTabURLOpener) urlOpener).onCallbackReceived();
         }
+        Log.i(LOGTAG, "Accepted OAuth callback intent");
         deliverPendingAuthRedirect();
     }
 
@@ -506,8 +530,21 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
         try {
             mBinder.handleAuthRedirect(pendingAuthRedirect);
             pendingAuthRedirect = null;
+            authRedirectDeliveryAttempts = 0;
+            mainHandler.removeCallbacks(authRedirectRetry);
+            Log.i(LOGTAG, "Delivered OAuth callback to active login flow");
         } catch (Exception e) {
-            Log.e(LOGTAG, "Failed to deliver authentication callback", e);
+            authRedirectDeliveryAttempts++;
+            if (authRedirectDeliveryAttempts < MAX_AUTH_REDIRECT_DELIVERY_ATTEMPTS) {
+                Log.d(LOGTAG, "OAuth flow is not ready; retrying callback delivery (attempt "
+                        + authRedirectDeliveryAttempts + ")");
+                mainHandler.removeCallbacks(authRedirectRetry);
+                mainHandler.postDelayed(authRedirectRetry, AUTH_REDIRECT_RETRY_DELAY_MS);
+            } else {
+                Log.e(LOGTAG, "Failed to deliver authentication callback after retries", e);
+                pendingAuthRedirect = null;
+                authRedirectDeliveryAttempts = 0;
+            }
         }
     }
 

@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,17 +18,20 @@ public class CustomTabURLOpener implements URLOpener {
 
     private boolean isOpened = false;
 
-    public interface OnCustomTabResult {
-        void onClosed();
+    public interface OnLaunchFailure {
+        void onLaunchFailed();
     }
 
-    public CustomTabURLOpener(AppCompatActivity activity,  OnCustomTabResult resultCallback) {
+    public CustomTabURLOpener(AppCompatActivity activity, OnLaunchFailure launchFailureCallback) {
         this.context = activity;
 
         this.customTabLauncher = activity.registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(), o -> {
                     isOpened = false;
-                    resultCallback.onClosed();
+                    // Returning from a Custom Tab is not an authentication
+                    // cancellation signal. On Android 16 this callback can run
+                    // before MainActivity.onNewIntent receives the OAuth URI.
+                    Log.d(TAG, "Custom Tab returned; waiting for OAuth callback or flow timeout");
                 }
         );
     }
@@ -64,10 +65,9 @@ public class CustomTabURLOpener implements URLOpener {
             intent.setData(Uri.parse(url));
             customTabLauncher.launch(intent);
         } catch (Exception e) {
+            isOpened = false;
             Log.e(TAG, "Failed to launch CustomTab: " + e.getMessage());
-            if (context instanceof OnCustomTabResult) {
-                ((OnCustomTabResult) context).onClosed();
-            }
+            launchFailureCallback.onLaunchFailed();
         }
     }
 }
