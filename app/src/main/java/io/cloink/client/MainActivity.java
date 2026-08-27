@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ApplicationInfo;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -78,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
     private static final long AUTH_REDIRECT_RETRY_DELAY_MS = 250L;
     private static final String STATE_PENDING_AUTH_REDIRECT = "pendingAuthRedirect";
     private static final String STATE_AUTH_REDIRECT_ATTEMPTS = "authRedirectDeliveryAttempts";
+    private static final String AUTH_DIAGNOSTICS_PREFS = "auth_callback_diagnostics";
+    private static final String AUTH_DIAGNOSTICS_STATUS = "status";
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final Runnable authRedirectRetry = this::deliverPendingAuthRedirect;
 
@@ -520,19 +523,26 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
             ((CustomTabURLOpener) urlOpener).onCallbackReceived();
         }
         Log.i(LOGTAG, "Accepted OAuth callback intent");
+        recordAuthDiagnostic("accepted");
         deliverPendingAuthRedirect();
     }
 
     private void deliverPendingAuthRedirect() {
-        if (mBinder == null || pendingAuthRedirect == null) {
+        if (pendingAuthRedirect == null) {
+            return;
+        }
+        if (mBinder == null) {
+            recordAuthDiagnostic("waiting_for_binder");
             return;
         }
         try {
+            recordAuthDiagnostic("delivery_attempted");
             mBinder.handleAuthRedirect(pendingAuthRedirect);
             pendingAuthRedirect = null;
             authRedirectDeliveryAttempts = 0;
             mainHandler.removeCallbacks(authRedirectRetry);
             Log.i(LOGTAG, "Delivered OAuth callback to active login flow");
+            recordAuthDiagnostic("delivered");
         } catch (Exception e) {
             authRedirectDeliveryAttempts++;
             if (authRedirectDeliveryAttempts < MAX_AUTH_REDIRECT_DELIVERY_ATTEMPTS) {
@@ -540,12 +550,24 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
                         + authRedirectDeliveryAttempts + ")");
                 mainHandler.removeCallbacks(authRedirectRetry);
                 mainHandler.postDelayed(authRedirectRetry, AUTH_REDIRECT_RETRY_DELAY_MS);
+                recordAuthDiagnostic("retrying");
             } else {
                 Log.e(LOGTAG, "Failed to deliver authentication callback after retries", e);
                 pendingAuthRedirect = null;
                 authRedirectDeliveryAttempts = 0;
+                recordAuthDiagnostic("failed");
             }
         }
+    }
+
+    private void recordAuthDiagnostic(String status) {
+        if ((getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) == 0) {
+            return;
+        }
+        getSharedPreferences(AUTH_DIAGNOSTICS_PREFS, Context.MODE_PRIVATE)
+                .edit()
+                .putString(AUTH_DIAGNOSTICS_STATUS, status)
+                .apply();
     }
 
     private void showFirstInstallFragment() {
