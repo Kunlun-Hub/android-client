@@ -16,6 +16,16 @@
     <string name="menu_troubleshoot">故障排查</string>
 
     <string name="main_status_disconnected">未连接</string>
+    <string name="home_connect">连接</string>
+    <string name="home_connecting">连接中</string>
+    <string name="home_connected">已连接</string>
+    <string name="home_disconnecting">断开中</string>
+    <string name="home_status_connecting">正在建立安全连接</string>
+    <string name="home_status_connected">Cloink 网络已启用</string>
+    <string name="home_status_disconnecting">正在关闭连接</string>
+    <string name="home_network_peers">网络设备</string>
+    <string name="home_peers_connected">已连接 %1$d，共 %2$d</string>
+    <string name="home_view_peers">查看</string>
     <string name="main_desc_bg_mask">背景遮罩</string>
     <string name="main_desc_connect">连接或断开</string>
 
