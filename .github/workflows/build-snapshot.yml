@@ -74,8 +74,23 @@ jobs:
           echo "version_code=$version_code" >> "$GITHUB_OUTPUT"
 
       - name: Write google-services.json
+        env:
+          GOOGLE_JSON: ${{ secrets.GOOGLE_JSON }}
         run: |
-          echo "${{ secrets.GOOGLE_JSON }}" | base64 -d > app/google-services.json
+          if [ -z "$GOOGLE_JSON" ]; then
+            echo "GOOGLE_JSON is not configured; building without Firebase services"
+          else
+            candidate="$(mktemp)"
+            if printf '%s' "$GOOGLE_JSON" | base64 --decode > "$candidate" 2>/dev/null \
+                && jq -e . "$candidate" >/dev/null 2>&1; then
+              mv "$candidate" app/google-services.json
+            elif printf '%s' "$GOOGLE_JSON" | jq -e . > "$candidate" 2>/dev/null; then
+              mv "$candidate" app/google-services.json
+            else
+              rm -f "$candidate"
+              echo "::warning::GOOGLE_JSON is neither valid JSON nor valid base64-encoded JSON; building without Firebase services"
+            fi
+          fi
 
       - name: Write keystore file
         run: |
