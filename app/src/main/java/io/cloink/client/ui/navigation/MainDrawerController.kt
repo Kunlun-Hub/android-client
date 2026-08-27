@@ -19,10 +19,11 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
 import io.cloink.client.R
 import io.cloink.client.ui.theme.CloinkTheme
+import java.util.function.IntConsumer
 
 class MainDrawerController(
-    private val onDestination: (Int) -> Unit,
-    private val onDocs: () -> Unit,
+    private val onDestination: IntConsumer,
+    private val onDocs: Runnable,
 ) {
     private var selected by mutableIntStateOf(R.id.nav_home)
     private var profileName by mutableStateOf("default")
@@ -30,7 +31,7 @@ class MainDrawerController(
     fun install(view: ComposeView) {
         view.setContent {
             CloinkTheme {
-                MainDrawer(selected, profileName, onDestination, onDocs)
+                MainDrawer(selected, profileName, onDestination::accept, onDocs::run)
             }
         }
     }

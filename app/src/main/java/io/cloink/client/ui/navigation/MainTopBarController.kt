@@ -17,8 +17,8 @@ import io.cloink.client.R
 import io.cloink.client.ui.theme.CloinkTheme
 
 class MainTopBarController(
-    private val onMenu: () -> Unit,
-    private val onBack: () -> Unit,
+    private val onMenu: Runnable,
+    private val onBack: Runnable,
 ) {
     private val current = mutableStateOf(R.id.nav_home)
     private val title = mutableStateOf("")
@@ -26,7 +26,7 @@ class MainTopBarController(
     fun install(view: ComposeView) {
         view.setContent {
             CloinkTheme {
-                MainTopBar(current.value, title.value, onMenu, onBack)
+                MainTopBar(current.value, title.value, onMenu::run, onBack::run)
             }
         }
     }
