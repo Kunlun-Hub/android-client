@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -86,13 +89,14 @@ internal sealed interface ProfileDialog {
 @androidx.compose.runtime.Composable
 internal fun ProfilesScreen(profiles: List<Profile>, onAction: (ProfileDialog, String?) -> Boolean) {
     var dialog by remember { mutableStateOf<ProfileDialog?>(null) }
+    val addProfileDescription = stringResource(R.string.profiles_add)
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { dialog = ProfileDialog.Add },
-                modifier = Modifier.semantics { contentDescription = "Add profile" },
-            ) { Text("+") }
+                modifier = Modifier.semantics { contentDescription = addProfileDescription },
+            ) { Icon(Icons.Default.Add, contentDescription = null) }
         },
     ) { padding ->
         LazyColumn(Modifier.fillMaxSize().padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {

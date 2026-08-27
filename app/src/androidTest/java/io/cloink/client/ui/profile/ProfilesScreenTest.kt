@@ -29,7 +29,7 @@ class ProfilesScreenTest {
             }
         }
 
-        composeRule.onNodeWithContentDescription("Add profile").performClick()
+        composeRule.onNodeWithContentDescription("Add Profile").performClick()
         composeRule.onNodeWithText("New Profile").assertIsDisplayed()
         composeRule.onNodeWithText("OK").assertIsNotEnabled()
         composeRule.onNodeWithText("Profile name").performTextInput("  Work  ")

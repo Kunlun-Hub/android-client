@@ -116,8 +116,8 @@ internal fun NetworkPanel(
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(tab == 0, { tab = 0; search = "" }, label = { Text("Peers") })
-                FilterChip(tab == 1, { tab = 1; search = "" }, label = { Text("Networks") })
+                FilterChip(tab == 0, { tab = 0; search = "" }, label = { Text(stringResource(R.string.peers_title)) })
+                FilterChip(tab == 1, { tab = 1; search = "" }, label = { Text(stringResource(R.string.networks_title)) })
             }
             OutlinedTextField(
                 search,
@@ -145,7 +145,7 @@ private fun PeerList(peers: List<Peer>) {
                 Column(Modifier.padding(16.dp)) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(peer.fqdn, style = MaterialTheme.typography.titleMedium)
-                        Text(peer.status.toString(), color = statusColor(peer.status))
+                        Text(statusLabel(peer.status), color = statusColor(peer.status))
                     }
                     Text(peer.ip, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     if (peer.ipv6.isNotBlank()) Text(peer.ipv6, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -182,3 +182,13 @@ private fun statusColor(status: Status) = when (status) {
     Status.CONNECTING -> MaterialTheme.colorScheme.primary
     else -> MaterialTheme.colorScheme.onSurfaceVariant
 }
+
+@androidx.compose.runtime.Composable
+private fun statusLabel(status: Status) = stringResource(
+    when (status) {
+        Status.CONNECTED -> R.string.peer_status_connected
+        Status.CONNECTING -> R.string.peer_status_connecting
+        Status.IDLE -> R.string.peer_status_idle
+        Status.UNKNOWN -> R.string.peer_status_unknown
+    },
+)

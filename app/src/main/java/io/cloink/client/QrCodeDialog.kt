@@ -104,13 +104,16 @@ internal fun QrCodeDialogContent(url: String, userCode: String, onClose: () -> U
                 verticalArrangement = Arrangement.spacedBy(18.dp),
             ) {
                 Text(stringResource(R.string.device_login_title), style = MaterialTheme.typography.headlineSmall)
-                bitmap?.let {
+            bitmap?.let {
                     Image(
                         bitmap = it.asImageBitmap(),
                         contentDescription = stringResource(R.string.qr_code_description),
-                        modifier = Modifier.sizeIn(maxWidth = 320.dp, maxHeight = 320.dp),
-                    )
-                }
+                    modifier = Modifier.sizeIn(maxWidth = 320.dp, maxHeight = 320.dp),
+                )
+            } ?: Text(
+                stringResource(R.string.qr_code_unavailable),
+                color = MaterialTheme.colorScheme.error,
+            )
                 if (userCode.isNotBlank()) {
                     Text(
                         stringResource(R.string.device_code, userCode),

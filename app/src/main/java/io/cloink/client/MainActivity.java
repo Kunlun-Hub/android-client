@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
                         for (StateListener listener : serviceStateListeners) {
                             listener.onEngineStopped();
                         }
-                        Toast.makeText(this, "VPN permission required", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, R.string.vpn_permission_required, Toast.LENGTH_LONG).show();
                         return;
                     }
 

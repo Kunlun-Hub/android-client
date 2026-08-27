@@ -2,6 +2,7 @@ package io.cloink.client.ui.navigation
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.runtime.mutableIntStateOf
@@ -27,7 +28,7 @@ class MainNavigationTest {
 
         composeRule.onNodeWithText("Advanced").performClick()
         composeRule.runOnIdle { assertEquals(R.id.nav_advanced, destination) }
-        composeRule.onNodeWithText("Documentation").performClick()
+        composeRule.onNodeWithText("Docs").performClick()
         composeRule.runOnIdle { assertEquals(true, docsOpened) }
     }
 
@@ -46,11 +47,11 @@ class MainNavigationTest {
                 )
             }
         }
-        composeRule.onNodeWithText("Menu").performClick()
+        composeRule.onNodeWithContentDescription("Menu").performClick()
 
         composeRule.runOnIdle { destination.intValue = R.id.nav_about }
         composeRule.onNodeWithText("About").assertIsDisplayed()
-        composeRule.onNodeWithText("Back").performClick()
+        composeRule.onNodeWithContentDescription("Back").performClick()
 
         composeRule.runOnIdle {
             assertEquals(1, menuCount)

@@ -74,12 +74,12 @@ class TroubleshootFragment : Fragment() {
     private fun copyResult(key: String) {
         generating = false
         val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("Debug bundle key", key))
-        Toast.makeText(requireContext(), "Debug bundle key copied to clipboard", Toast.LENGTH_SHORT).show()
+        clipboard.setPrimaryClip(ClipData.newPlainText(getString(R.string.troubleshoot_debug_bundle_key), key))
+        Toast.makeText(requireContext(), R.string.troubleshoot_debug_bundle_key_copied, Toast.LENGTH_SHORT).show()
     }
 
     private fun finishWithError(error: Throwable) {
         generating = false
-        Toast.makeText(requireContext(), "Failed to create debug bundle: ${error.message}", Toast.LENGTH_LONG).show()
+        Toast.makeText(requireContext(), getString(R.string.troubleshoot_debug_bundle_failed, error.message.orEmpty()), Toast.LENGTH_LONG).show()
     }
 }

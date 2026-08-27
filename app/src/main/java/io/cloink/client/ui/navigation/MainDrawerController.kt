@@ -62,17 +62,17 @@ internal fun MainDrawer(
             .padding(horizontal = 16.dp, vertical = 28.dp),
     ) {
         Text("Cloink", style = MaterialTheme.typography.headlineMedium)
-        Text("Secure private networking", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.drawer_subtitle), color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.padding(14.dp))
-        DrawerDestination(R.id.nav_home, "Home", selected, onDestination)
+        DrawerDestination(R.id.nav_home, stringResource(R.string.menu_home), selected, onDestination)
         DrawerDestination(R.id.nav_profiles, profileName, selected, onDestination)
         HorizontalDivider(Modifier.padding(vertical = 10.dp))
-        DrawerDestination(R.id.nav_advanced, "Advanced", selected, onDestination)
-        DrawerDestination(R.id.nav_change_server, "Change server", selected, onDestination)
-        DrawerDestination(R.id.nav_troubleshoot, "Troubleshoot", selected, onDestination)
-        DrawerDestination(R.id.nav_about, "About", selected, onDestination)
+        DrawerDestination(R.id.nav_advanced, stringResource(R.string.menu_advanced), selected, onDestination)
+        DrawerDestination(R.id.nav_change_server, stringResource(R.string.menu_change_server), selected, onDestination)
+        DrawerDestination(R.id.nav_troubleshoot, stringResource(R.string.menu_troubleshoot), selected, onDestination)
+        DrawerDestination(R.id.nav_about, stringResource(R.string.menu_about), selected, onDestination)
         Text(
-            "Documentation",
+            stringResource(R.string.menu_docs),
             modifier = Modifier.clickable(onClick = onDocs).padding(16.dp),
             color = MaterialTheme.colorScheme.primary,
         )
