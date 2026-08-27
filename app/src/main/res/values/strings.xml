@@ -36,6 +36,7 @@
 
     <string name="fragment_firstinstall_txt">By default, this app connects to https://cloink.4w.ink. You can select Change Server to use another Cloink deployment.</string>
     <string name="fragment_firstinstall_continue">Continue</string>
+    <string name="first_install_title">Welcome</string>
     <string name="fragment_firstinstall_desc_logo">Cloink logo</string>
     <string name="fragment_firstinstall_androidtv_beta">Android TV support is currently in beta. Some features may not work as expected.</string>
 

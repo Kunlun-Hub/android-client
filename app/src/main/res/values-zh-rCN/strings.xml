@@ -36,6 +36,7 @@
 
     <string name="fragment_firstinstall_txt">默认连接到 https://cloink.4w.ink。您可以在“更换服务器”中使用其他 Cloink 部署。</string>
     <string name="fragment_firstinstall_continue">继续</string>
+    <string name="first_install_title">欢迎</string>
     <string name="fragment_firstinstall_desc_logo">Cloink 标志</string>
     <string name="fragment_firstinstall_androidtv_beta">Android TV 支持目前处于测试阶段，部分功能可能无法正常工作。</string>
 

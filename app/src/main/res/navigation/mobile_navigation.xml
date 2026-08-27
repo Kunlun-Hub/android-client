@@ -43,5 +43,5 @@
     <fragment
         android:id="@+id/firstInstallFragment"
         android:name="io.cloink.client.ui.fistinstall.FirstInstallFragment"
-        android:label="FirstInstall" />
+        android:label="@string/first_install_title" />
 </navigation>

@@ -1,5 +1,8 @@
 package io.cloink.client.ui.navigation
 
+import android.content.res.Configuration
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -11,6 +14,7 @@ import io.cloink.client.ui.theme.CloinkTheme
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import java.util.Locale
 
 class MainNavigationTest {
     @get:Rule
@@ -30,6 +34,25 @@ class MainNavigationTest {
         composeRule.runOnIdle { assertEquals(R.id.nav_advanced, destination) }
         composeRule.onNodeWithText("Docs").performClick()
         composeRule.runOnIdle { assertEquals(true, docsOpened) }
+    }
+
+    @Test
+    fun drawerUsesChineseResources() {
+        val baseContext = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().targetContext
+        val localizedContext = baseContext.createConfigurationContext(
+            Configuration(baseContext.resources.configuration).apply { setLocale(Locale.SIMPLIFIED_CHINESE) },
+        )
+        composeRule.setContent {
+            CompositionLocalProvider(LocalContext provides localizedContext) {
+                CloinkTheme(darkTheme = false) {
+                    MainDrawer(R.id.nav_home, "工作", "test", {}, {})
+                }
+            }
+        }
+
+        composeRule.onNodeWithText("首页").assertIsDisplayed()
+        composeRule.onNodeWithText("高级设置").assertIsDisplayed()
+        composeRule.onNodeWithText("文档").assertIsDisplayed()
     }
 
     @Test
