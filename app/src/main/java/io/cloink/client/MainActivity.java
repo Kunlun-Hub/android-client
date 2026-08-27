@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
                 () -> binding.drawerLayout.openDrawer(GravityCompat.START),
                 () -> navController.popBackStack());
         topBarController.install(binding.appBarMain.toolbar);
-        drawerController = new MainDrawerController(this::navigateFromDrawer, this::openDocs, BuildConfig.VERSION_NAME);
+        drawerController = new MainDrawerController(this::navigateFromDrawer, this::openDocs, getVersionName());
         drawerController.install(binding.navView);
         updateProfileMenuItem();
 
@@ -465,6 +465,16 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
         String url = "https://cloink.4w.ink";
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         startActivity(intent);
+    }
+
+    private String getVersionName() {
+        try {
+            String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            return versionName == null ? "" : versionName;
+        } catch (Exception exception) {
+            Log.w(LOGTAG, "Unable to read app version", exception);
+            return "";
+        }
     }
 
     private void startService() {
