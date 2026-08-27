@@ -2,13 +2,18 @@ package io.cloink.client.ui.navigation
 
 import android.content.res.Configuration
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertWidthIsEqualTo
+import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.unit.dp
 import io.cloink.client.R
 import io.cloink.client.ui.theme.CloinkTheme
 import org.junit.Assert.assertEquals
@@ -34,6 +39,21 @@ class MainNavigationTest {
         composeRule.runOnIdle { assertEquals(R.id.nav_advanced, destination) }
         composeRule.onNodeWithText("Docs").performClick()
         composeRule.runOnIdle { assertEquals(true, docsOpened) }
+
+        val drawer = composeRule.onNodeWithTag("main_drawer_surface")
+        drawer.assertWidthIsEqualTo(304.dp)
+        val pixels = drawer.captureToImage().toPixelMap()
+        val corners = listOf(
+            pixels[0, 0],
+            pixels[pixels.width - 1, 0],
+            pixels[0, pixels.height - 1],
+            pixels[pixels.width - 1, pixels.height - 1],
+        )
+        composeRule.runOnIdle {
+            corners.forEach { color ->
+                org.junit.Assert.assertEquals(1f, color.alpha, 0.001f)
+            }
+        }
     }
 
     @Test
