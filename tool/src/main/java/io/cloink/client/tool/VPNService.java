@@ -205,6 +205,10 @@ public class VPNService extends android.net.VpnService {
             engineRunner.stop();
         }
 
+        public void handleAuthRedirect(String callbackURL) throws Exception {
+            engineRunner.handleAuthRedirect(callbackURL);
+        }
+
         public boolean isRunning() {
             return engineRunner.isRunning();
         }

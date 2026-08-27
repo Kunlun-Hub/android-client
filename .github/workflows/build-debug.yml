@@ -135,3 +135,36 @@ jobs:
             app/build/reports/androidTests/
             tool/build/reports/androidTests/
           retention-days: 3
+
+  android-16-callback:
+    needs: build-debug
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download debug APK
+        uses: actions/download-artifact@v4
+        with:
+          pattern: debug-artifacts-*
+          merge-multiple: true
+          path: debug-artifacts
+
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Verify Android 16 callback routing
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: |
+            apk=$(find debug-artifacts -name '*.apk' -print -quit)
+            test -n "$apk"
+            adb install -r "$apk"
+            adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE \
+              -d 'io.cloink.client://oauth2/callback?code=test-code&state=test-state' io.cloink.client
+            adb shell dumpsys activity activities | grep -F 'io.cloink.client/.MainActivity'

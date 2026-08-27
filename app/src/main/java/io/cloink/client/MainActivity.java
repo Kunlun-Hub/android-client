@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private boolean isSSOFinishedWell = false;
     private boolean isRunningOnTV = false;
     private boolean useDeviceCodeFlow = false;
+    private String pendingAuthRedirect;
 
     // Last known state for UI updates
     private ConnectionState lastKnownState = ConnectionState.UNKNOWN;
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mBinder = (VPNService.MyLocalBinder) binder;
             mBinder.setConnectionStateListener(connectionListener);
             mBinder.addServiceStateListener(serviceStateListener);
+            deliverPendingAuthRedirect();
         }
 
         @Override
@@ -265,6 +267,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             UpdateChecker.check(this);
         }
 
+        handleAuthRedirectIntent(getIntent());
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleAuthRedirectIntent(intent);
     }
 
     @Override
@@ -497,6 +508,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Intent bindIntent = new Intent(this, VPNService.class);
         bindService(bindIntent, serviceIPC, Context.BIND_ABOVE_CLIENT);
+    }
+
+    private void handleAuthRedirectIntent(Intent intent) {
+        if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction())) {
+            return;
+        }
+        Uri callback = intent.getData();
+        if (callback == null
+                || !"io.cloink.client".equals(callback.getScheme())
+                || !"oauth2".equals(callback.getHost())
+                || !"/callback".equals(callback.getPath())) {
+            Log.w(LOGTAG, "Ignoring unexpected authentication callback target");
+            return;
+        }
+
+        pendingAuthRedirect = callback.toString();
+        if (urlOpener instanceof CustomTabURLOpener) {
+            ((CustomTabURLOpener) urlOpener).onCallbackReceived();
+        }
+        deliverPendingAuthRedirect();
+    }
+
+    private void deliverPendingAuthRedirect() {
+        if (mBinder == null || pendingAuthRedirect == null) {
+            return;
+        }
+        try {
+            mBinder.handleAuthRedirect(pendingAuthRedirect);
+            pendingAuthRedirect = null;
+        } catch (Exception e) {
+            Log.e(LOGTAG, "Failed to deliver authentication callback", e);
+        }
     }
 
     private void showFirstInstallFragment() {

@@ -39,6 +39,10 @@ public class CustomTabURLOpener implements URLOpener {
         return isOpened;
     }
 
+    public void onCallbackReceived() {
+        isOpened = false;
+    }
+
     @Override
     public void onLoginSuccess() {
         Log.d(TAG, "onLoginSuccess fired.");

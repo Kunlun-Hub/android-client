@@ -246,6 +246,10 @@ class EngineRunner {
         goClient.stop();
     }
 
+    public void handleAuthRedirect(String callbackURL) throws Exception {
+        goClient.handleAuthRedirect(callbackURL);
+    }
+
     public PeerInfoArray peersInfo() {
         return goClient.peersList();
     }
