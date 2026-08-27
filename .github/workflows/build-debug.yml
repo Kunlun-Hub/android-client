@@ -167,14 +167,6 @@ jobs:
             adb logcat -c
             adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'io.cloink.client://oauth2/callback?code=test-code' -p io.cloink.client
             adb shell dumpsys activity activities | grep -F 'io.cloink.client/.MainActivity'
-            for attempt in $(seq 1 20); do
-              logs="$(adb logcat -d -s NBMainActivity:I '*:S')"
-              if printf '%s' "$logs" | grep -F 'Accepted OAuth callback intent' >/dev/null \
-                  && printf '%s' "$logs" | grep -E 'Delivered OAuth callback|retrying callback delivery' >/dev/null; then
-                exit 0
-              fi
-              sleep 1
-            done
-            adb logcat -d -s NBMainActivity:V EngineRunner:V '*:S'
-            echo 'OAuth callback was routed to MainActivity but not handed toward the Binder login flow' >&2
-            exit 1
+            sleep 3
+            adb logcat -d -s NBMainActivity:V '*:S' | grep -F 'Accepted OAuth callback intent'
+            adb logcat -d -s NBMainActivity:V '*:S' | grep -E 'Delivered OAuth callback|retrying callback delivery'
