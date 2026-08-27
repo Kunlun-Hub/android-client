@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
     private ActivityResultLauncher<Intent> vpnActivityResultLauncher;
     private final List<StateListener> serviceStateListeners = new ArrayList<>();
     private URLOpener urlOpener;
-    private QrCodeDialog qrCodeDialog;
 
     private boolean isSSOFinishedWell = false;
     private boolean isRunningOnTV = false;
@@ -102,6 +101,16 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        getSupportFragmentManager().setFragmentResultListener(
+                QrCodeDialog.RESULT_KEY,
+                this,
+                (requestKey, result) -> {
+                    if (!result.getBoolean(QrCodeDialog.RESULT_CANCELLED) || isSSOFinishedWell || mBinder == null) {
+                        return;
+                    }
+                    mBinder.stopEngine();
+                });
 
         isRunningOnTV = PlatformUtils.isAndroidTV(this);
         useDeviceCodeFlow = PlatformUtils.requiresDeviceCodeFlow(this);
@@ -177,16 +186,8 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
             urlOpener = new URLOpener() {
                 @Override
                 public void open(String url, String userCode) {
-                    qrCodeDialog = QrCodeDialog.newInstance(url, userCode, () -> {
-                        if (isSSOFinishedWell) {
-                            return;
-                        }
-                        if (mBinder == null) {
-                            return;
-                        }
-                        mBinder.stopEngine();
-                    });
-                    qrCodeDialog.show(getSupportFragmentManager(), "QrCodeDialog");
+                    QrCodeDialog.newInstance(url, userCode)
+                            .show(getSupportFragmentManager(), QrCodeDialog.TAG);
 
                     if (!isRunningOnTV) {
                         try {
@@ -201,9 +202,10 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
                 @Override
                 public void onLoginSuccess() {
                     Log.d(LOGTAG, "onLoginSuccess fired for device code flow.");
-                    if (qrCodeDialog != null && qrCodeDialog.isVisible()) {
-                        qrCodeDialog.dismiss();
-                        qrCodeDialog = null;
+                    QrCodeDialog visibleDialog = (QrCodeDialog) getSupportFragmentManager()
+                            .findFragmentByTag(QrCodeDialog.TAG);
+                    if (visibleDialog != null) {
+                        visibleDialog.dismissForLoginSuccess();
                     }
                 }
             };

@@ -32,7 +32,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder
 import io.cloink.client.ui.theme.CloinkTheme
 
 class QrCodeDialog : DialogFragment() {
-    private var onDismissed: Runnable? = null
+    private var loginSucceeded = false
 
     override fun onCreateDialog(state: Bundle?): Dialog {
         val url = requireArguments().getString(ARG_URL).orEmpty()
@@ -57,22 +57,31 @@ class QrCodeDialog : DialogFragment() {
 
     override fun onDismiss(dialog: android.content.DialogInterface) {
         super.onDismiss(dialog)
-        onDismissed?.run()
-        onDismissed = null
+        parentFragmentManager.setFragmentResult(
+            RESULT_KEY,
+            Bundle().apply { putBoolean(RESULT_CANCELLED, !loginSucceeded) },
+        )
+    }
+
+    fun dismissForLoginSuccess() {
+        loginSucceeded = true
+        dismiss()
     }
 
     companion object {
+        const val TAG = "QrCodeDialog"
+        const val RESULT_KEY = "qrCodeDialogResult"
+        const val RESULT_CANCELLED = "cancelled"
         private const val ARG_URL = "url"
         private const val ARG_USER_CODE = "userCode"
 
         @JvmStatic
-        fun newInstance(url: String, userCode: String?, callback: Runnable): QrCodeDialog =
+        fun newInstance(url: String, userCode: String?): QrCodeDialog =
             QrCodeDialog().apply {
                 arguments = Bundle().apply {
                     putString(ARG_URL, url)
                     putString(ARG_USER_CODE, userCode)
                 }
-                onDismissed = callback
             }
     }
 }
