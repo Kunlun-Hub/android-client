@@ -14,7 +14,6 @@ import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +21,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.android.material.navigation.NavigationView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -43,13 +41,14 @@ import io.cloink.client.tool.RouteChangeListener;
 import io.cloink.client.tool.ServiceStateListener;
 import io.cloink.client.tool.VPNService;
 import io.cloink.client.ui.PreferenceUI;
+import io.cloink.client.ui.navigation.MainDrawerController;
 import io.cloink.gomobile.android.ConnectionListener;
 import io.cloink.gomobile.android.NetworkArray;
 import io.cloink.gomobile.android.PeerInfoArray;
 import io.cloink.gomobile.android.URLOpener;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ServiceAccessor, StateListenerRegistry {
+public class MainActivity extends AppCompatActivity implements ServiceAccessor, StateListenerRegistry {
 
     private StateListAnimator stateAnim;
 
@@ -66,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
     private NavController navController;
+    private MainDrawerController drawerController;
 
     private ActivityResultLauncher<Intent> vpnActivityResultLauncher;
     private final List<StateListener> serviceStateListeners = new ArrayList<>();
@@ -120,13 +120,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setVersionText();
 
         DrawerLayout drawer = binding.drawerLayout;
-        NavigationView navigationView = binding.navView;
-
-        // Set the listener for menu item selections
-        navigationView.setNavigationItemSelectedListener(this);
-
-        // Update profile menu item with active profile name
-        updateProfileMenuItem(navigationView);
+        drawerController = new MainDrawerController(this::navigateFromDrawer, this::openDocs);
+        drawerController.install(binding.navView);
+        updateProfileMenuItem();
 
         // On TV, request focus when drawer opens so D-pad navigation works
         if (isRunningOnTV) {
@@ -134,21 +130,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void onDrawerOpened(View drawerView) {
                     // Request focus on the drawer when it opens
-                    navigationView.postDelayed(() -> {
-                        navigationView.setFocusable(true);
-                        navigationView.setFocusableInTouchMode(false);
+                    binding.navView.postDelayed(() -> {
+                        binding.navView.setFocusable(true);
+                        binding.navView.setFocusableInTouchMode(false);
                         
-                        if (!navigationView.requestFocus()) {
+                        if (!binding.navView.requestFocus()) {
                             Log.d(LOGTAG, "NavigationView couldn't get focus, trying menu items");
-                        }
-                        
-                        // Try to find and focus the first visible menu item
-                        View menuView = navigationView.getChildAt(0);
-                        if (menuView != null) {
-                            View firstFocusable = menuView.findFocus();
-                            if (firstFocusable == null) {
-                                menuView.requestFocus();
-                            }
                         }
                     }, 100); // Delay to let drawer animation finish
                 }
@@ -174,12 +161,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            drawerController.select(destination.getId());
             if (destination.getId() == R.id.nav_home) {
                 removeToolbarShadow();
                 // Update profile menu item when returning to home (e.g., after profile switch)
-                if (binding != null && binding.navView != null) {
-                    updateProfileMenuItem(binding.navView);
-                }
+                updateProfileMenuItem();
             } else {
                 resetToolbar();
             }
@@ -289,9 +275,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
         // Update profile menu item when returning to MainActivity
-        if (binding != null && binding.navView != null) {
-            updateProfileMenuItem(binding.navView);
-        }
+        updateProfileMenuItem();
     }
 
     @Override
@@ -335,21 +319,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.nav_docs) {
-            item.setCheckable(false);
-            binding.drawerLayout.closeDrawers();
-            openDocs();
-            return true;
+    private void navigateFromDrawer(int id) {
+        if (navController.getCurrentDestination() == null || navController.getCurrentDestination().getId() != id) {
+            navController.navigate(id);
         }
-
-        // Use NavigationUI which handles launchSingleTop and saveState/restoreState
-        // This prevents fragment recreation and preserves state when alternating between destinations
-        boolean isHandled = NavigationUI.onNavDestinationSelected(item, navController);
+        drawerController.select(id);
         binding.drawerLayout.closeDrawers();
-        return isHandled;
     }
 
     @Override
@@ -686,16 +661,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
-    private void updateProfileMenuItem(NavigationView navigationView) {
+    private void updateProfileMenuItem() {
         try {
             // Get active profile from ProfileManager instead of reading file
             io.cloink.client.tool.ProfileManagerWrapper profileManager =
                 new io.cloink.client.tool.ProfileManagerWrapper(this);
             Profile activeProfile = profileManager.getActiveProfile();
-            Menu menu = navigationView.getMenu();
-            MenuItem profileItem = menu.findItem(R.id.nav_profiles);
-            if (profileItem != null && activeProfile != null) {
-                profileItem.setTitle(activeProfile.getName());
+            if (drawerController != null && activeProfile != null) {
+                drawerController.updateProfile(activeProfile.getName());
             }
         } catch (Exception e) {
             Log.e(LOGTAG, "Failed to update profile menu item", e);
