@@ -12,12 +12,11 @@
         android:layout_height="wrap_content"
         android:theme="@style/Theme.Cloink.AppBarOverlay">
 
-        <androidx.appcompat.widget.Toolbar
+        <androidx.compose.ui.platform.ComposeView
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/nb_bg"
-            app:popupTheme="@style/Theme.Cloink.PopupOverlay" />
+            android:background="@color/nb_bg" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

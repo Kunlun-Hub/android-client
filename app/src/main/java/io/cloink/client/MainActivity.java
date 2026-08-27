@@ -30,8 +30,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -42,6 +40,7 @@ import io.cloink.client.tool.ServiceStateListener;
 import io.cloink.client.tool.VPNService;
 import io.cloink.client.ui.PreferenceUI;
 import io.cloink.client.ui.navigation.MainDrawerController;
+import io.cloink.client.ui.navigation.MainTopBarController;
 import io.cloink.gomobile.android.ConnectionListener;
 import io.cloink.gomobile.android.NetworkArray;
 import io.cloink.gomobile.android.PeerInfoArray;
@@ -62,10 +61,10 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
     private final static String LOGTAG = "NBMainActivity";
     private VPNService.MyLocalBinder mBinder;
 
-    private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
     private NavController navController;
     private MainDrawerController drawerController;
+    private MainTopBarController topBarController;
 
     private ActivityResultLauncher<Intent> vpnActivityResultLauncher;
     private final List<StateListener> serviceStateListeners = new ArrayList<>();
@@ -106,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        setSupportActionBar(binding.appBarMain.toolbar);
 
         isRunningOnTV = PlatformUtils.isAndroidTV(this);
         useDeviceCodeFlow = PlatformUtils.requiresDeviceCodeFlow(this);
@@ -120,6 +118,10 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
         setVersionText();
 
         DrawerLayout drawer = binding.drawerLayout;
+        topBarController = new MainTopBarController(
+                () -> binding.drawerLayout.openDrawer(GravityCompat.START),
+                () -> navController.popBackStack());
+        topBarController.install(binding.appBarMain.toolbar);
         drawerController = new MainDrawerController(this::navigateFromDrawer, this::openDocs);
         drawerController.install(binding.navView);
         updateProfileMenuItem();
@@ -151,17 +153,11 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
             });
         }
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home)
-                .setOpenableLayout(drawer)
-                .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             drawerController.select(destination.getId());
+            topBarController.update(destination.getId(), destination.getLabel() == null ? "" : destination.getLabel().toString());
             if (destination.getId() == R.id.nav_home) {
                 removeToolbarShadow();
                 // Update profile menu item when returning to home (e.g., after profile switch)
@@ -329,9 +325,7 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
 
     @Override
     public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
+        return navController.popBackStack() || super.onSupportNavigateUp();
     }
 
     @Override
