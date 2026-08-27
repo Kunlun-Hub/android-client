@@ -30,28 +30,7 @@ class MainDrawerController(
     fun install(view: ComposeView) {
         view.setContent {
             CloinkTheme {
-                Column(
-                    Modifier
-                        .width(288.dp)
-                        .fillMaxHeight()
-                        .padding(horizontal = 16.dp, vertical = 28.dp),
-                ) {
-                    Text("Cloink", style = MaterialTheme.typography.headlineMedium)
-                    Text("Secure private networking", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Spacer(Modifier.padding(14.dp))
-                    Destination(R.id.nav_home, "Home")
-                    Destination(R.id.nav_profiles, profileName)
-                    HorizontalDivider(Modifier.padding(vertical = 10.dp))
-                    Destination(R.id.nav_advanced, "Advanced")
-                    Destination(R.id.nav_change_server, "Change server")
-                    Destination(R.id.nav_troubleshoot, "Troubleshoot")
-                    Destination(R.id.nav_about, "About")
-                    Text(
-                        "Documentation",
-                        modifier = Modifier.clickable(onClick = onDocs).padding(16.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                }
+                MainDrawer(selected, profileName, onDestination, onDocs)
             }
         }
     }
@@ -63,13 +42,44 @@ class MainDrawerController(
     fun updateProfile(name: String) {
         profileName = name
     }
+}
 
-    @androidx.compose.runtime.Composable
-    private fun Destination(id: Int, label: String) {
+@androidx.compose.runtime.Composable
+internal fun MainDrawer(
+    selected: Int,
+    profileName: String,
+    onDestination: (Int) -> Unit,
+    onDocs: () -> Unit,
+) {
+    Column(
+        Modifier
+            .width(288.dp)
+            .fillMaxHeight()
+            .padding(horizontal = 16.dp, vertical = 28.dp),
+    ) {
+        Text("Cloink", style = MaterialTheme.typography.headlineMedium)
+        Text("Secure private networking", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.padding(14.dp))
+        DrawerDestination(R.id.nav_home, "Home", selected, onDestination)
+        DrawerDestination(R.id.nav_profiles, profileName, selected, onDestination)
+        HorizontalDivider(Modifier.padding(vertical = 10.dp))
+        DrawerDestination(R.id.nav_advanced, "Advanced", selected, onDestination)
+        DrawerDestination(R.id.nav_change_server, "Change server", selected, onDestination)
+        DrawerDestination(R.id.nav_troubleshoot, "Troubleshoot", selected, onDestination)
+        DrawerDestination(R.id.nav_about, "About", selected, onDestination)
+        Text(
+            "Documentation",
+            modifier = Modifier.clickable(onClick = onDocs).padding(16.dp),
+            color = MaterialTheme.colorScheme.primary,
+        )
+    }
+}
+
+@androidx.compose.runtime.Composable
+private fun DrawerDestination(id: Int, label: String, selected: Int, onDestination: (Int) -> Unit) {
         NavigationDrawerItem(
             label = { Text(label) },
             selected = selected == id,
             onClick = { onDestination(id) },
         )
-    }
 }

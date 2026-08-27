@@ -27,6 +27,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
@@ -50,20 +52,8 @@ class ProfilesFragment : Fragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 var profiles by remember { mutableStateOf(manager.listProfiles()) }
-                var dialog by remember { mutableStateOf<ProfileDialog?>(null) }
                 CloinkTheme {
-                    Scaffold(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        floatingActionButton = { FloatingActionButton(onClick = { dialog = ProfileDialog.Add }) { Text("+") } },
-                    ) { padding ->
-                        LazyColumn(Modifier.fillMaxSize().padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            items(profiles, key = { it.id }) { profile ->
-                                ProfileCard(profile, onSwitch = { dialog = ProfileDialog.Switch(profile) },
-                                    onLogout = { dialog = ProfileDialog.Logout(profile) }, onRemove = { dialog = ProfileDialog.Remove(profile) })
-                            }
-                        }
-                    }
-                    dialog?.let { current -> ProfileActionDialog(current, onDismiss = { dialog = null }) { name ->
+                    ProfilesScreen(profiles) { current, name ->
                         runCatching {
                             when (current) {
                                 ProfileDialog.Add -> manager.addProfile(name.orEmpty())
@@ -77,20 +67,50 @@ class ProfilesFragment : Fragment() {
                             }
                         }.onSuccess {
                             profiles = manager.listProfiles()
-                            dialog = null
                             if (current is ProfileDialog.Switch) requireActivity().onBackPressedDispatcher.onBackPressed()
                         }.onFailure { Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show() }
-                    } }
+                            .isSuccess
+                    }
                 }
             }
         }
 }
 
-private sealed interface ProfileDialog {
+internal sealed interface ProfileDialog {
     data object Add : ProfileDialog
     data class Switch(val profile: Profile) : ProfileDialog
     data class Logout(val profile: Profile) : ProfileDialog
     data class Remove(val profile: Profile) : ProfileDialog
+}
+
+@androidx.compose.runtime.Composable
+internal fun ProfilesScreen(profiles: List<Profile>, onAction: (ProfileDialog, String?) -> Boolean) {
+    var dialog by remember { mutableStateOf<ProfileDialog?>(null) }
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { dialog = ProfileDialog.Add },
+                modifier = Modifier.semantics { contentDescription = "Add profile" },
+            ) { Text("+") }
+        },
+    ) { padding ->
+        LazyColumn(Modifier.fillMaxSize().padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            items(profiles, key = { it.id }) { profile ->
+                ProfileCard(
+                    profile,
+                    onSwitch = { dialog = ProfileDialog.Switch(profile) },
+                    onLogout = { dialog = ProfileDialog.Logout(profile) },
+                    onRemove = { dialog = ProfileDialog.Remove(profile) },
+                )
+            }
+        }
+    }
+    dialog?.let { current ->
+        ProfileActionDialog(current, onDismiss = { dialog = null }) { name ->
+            if (onAction(current, name)) dialog = null
+        }
+    }
 }
 
 @androidx.compose.runtime.Composable

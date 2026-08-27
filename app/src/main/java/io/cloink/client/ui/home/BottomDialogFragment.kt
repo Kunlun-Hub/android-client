@@ -78,7 +78,14 @@ class BottomDialogFragment : BottomSheetDialogFragment() {
             setContent {
                 val peers by peersViewModel.uiState.observeAsState(PeersFragmentUiState(emptyList()))
                 val networks by networksViewModel.uiState.observeAsState(NetworksFragmentUiState(emptyList(), emptyList()))
-                CloinkTheme { NetworkPanel(peers.peers, networks.resources) }
+                CloinkTheme {
+                    NetworkPanel(peers.peers, networks.resources) { resource, selected ->
+                        runCatching {
+                            if (selected) networksViewModel.selectRoute(resource.name)
+                            else networksViewModel.deselectRoute(resource.name)
+                        }.onFailure { Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show() }
+                    }
+                }
             }
         }
 
@@ -96,67 +103,82 @@ class BottomDialogFragment : BottomSheetDialogFragment() {
         super.onStop()
     }
 
-    @androidx.compose.runtime.Composable
-    private fun NetworkPanel(peers: List<Peer>, resources: List<Resource>) {
-        var tab by remember { mutableIntStateOf(0) }
-        var search by remember { mutableStateOf("") }
-        Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
-            Column(Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(tab == 0, { tab = 0 }, label = { Text("Peers") })
-                    FilterChip(tab == 1, { tab = 1 }, label = { Text("Networks") })
-                }
-                OutlinedTextField(search, { search = it }, Modifier.fillMaxWidth(),
-                    placeholder = { Text(stringResource(if (tab == 0) R.string.peers_hint_search_peers else R.string.networks_hint_search_networks)) })
-                if (tab == 0) PeerList(peers.filter { it.fqdn.contains(search, true) || it.ip.contains(search, true) })
-                else ResourceList(resources.filter { it.name.contains(search, true) || it.address.contains(search, true) })
+}
+
+@androidx.compose.runtime.Composable
+internal fun NetworkPanel(
+    peers: List<Peer>,
+    resources: List<Resource>,
+    onRouteSelection: (Resource, Boolean) -> Unit,
+) {
+    var tab by remember { mutableIntStateOf(0) }
+    var search by remember { mutableStateOf("") }
+    Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
+        Column(Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(tab == 0, { tab = 0; search = "" }, label = { Text("Peers") })
+                FilterChip(tab == 1, { tab = 1; search = "" }, label = { Text("Networks") })
+            }
+            OutlinedTextField(
+                search,
+                { search = it },
+                Modifier.fillMaxWidth(),
+                placeholder = { Text(stringResource(if (tab == 0) R.string.peers_hint_search_peers else R.string.networks_hint_search_networks)) },
+            )
+            if (tab == 0) {
+                PeerList(peers.filter { it.fqdn.contains(search, true) || it.ip.contains(search, true) })
+            } else {
+                ResourceList(
+                    resources.filter { it.name.contains(search, true) || it.address.contains(search, true) },
+                    onRouteSelection,
+                )
             }
         }
     }
+}
 
-    @androidx.compose.runtime.Composable
-    private fun PeerList(peers: List<Peer>) {
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(peers, key = { it.fqdn }) { peer ->
-                Card(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(16.dp)) {
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(peer.fqdn, style = MaterialTheme.typography.titleMedium)
-                            Text(peer.status.toString(), color = statusColor(peer.status))
-                        }
-                        Text(peer.ip, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        if (peer.ipv6.isNotBlank()) Text(peer.ipv6, color = MaterialTheme.colorScheme.onSurfaceVariant)
+@androidx.compose.runtime.Composable
+private fun PeerList(peers: List<Peer>) {
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(peers, key = { it.fqdn }) { peer ->
+            Card(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp)) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(peer.fqdn, style = MaterialTheme.typography.titleMedium)
+                        Text(peer.status.toString(), color = statusColor(peer.status))
                     }
+                    Text(peer.ip, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (peer.ipv6.isNotBlank()) Text(peer.ipv6, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
     }
+}
 
-    @androidx.compose.runtime.Composable
-    private fun ResourceList(resources: List<Resource>) {
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(resources, key = { it.name + it.address }) { resource ->
-                Card(Modifier.fillMaxWidth()) {
-                    Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Column(Modifier.weight(1f)) {
-                            Text(resource.name, style = MaterialTheme.typography.titleMedium)
-                            Text(resource.address, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            if (resource.isExitNode) Text(stringResource(R.string.networks_desc_exit_node), color = MaterialTheme.colorScheme.primary)
-                        }
-                        Switch(checked = resource.isSelected, onCheckedChange = { selected ->
-                            runCatching { if (selected) networksViewModel.selectRoute(resource.name) else networksViewModel.deselectRoute(resource.name) }
-                                .onFailure { Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show() }
-                        })
+@androidx.compose.runtime.Composable
+private fun ResourceList(resources: List<Resource>, onRouteSelection: (Resource, Boolean) -> Unit) {
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(resources, key = { it.name + it.address }) { resource ->
+            Card(Modifier.fillMaxWidth()) {
+                Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Column(Modifier.weight(1f)) {
+                        Text(resource.name, style = MaterialTheme.typography.titleMedium)
+                        Text(resource.address, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        if (resource.isExitNode) Text(stringResource(R.string.networks_desc_exit_node), color = MaterialTheme.colorScheme.primary)
                     }
+                    Switch(
+                        checked = resource.isSelected,
+                        onCheckedChange = { onRouteSelection(resource, it) },
+                    )
                 }
             }
         }
     }
+}
 
-    @androidx.compose.runtime.Composable
-    private fun statusColor(status: Status) = when (status) {
-        Status.CONNECTED -> MaterialTheme.colorScheme.secondary
-        Status.CONNECTING -> MaterialTheme.colorScheme.primary
-        else -> MaterialTheme.colorScheme.onSurfaceVariant
-    }
+@androidx.compose.runtime.Composable
+private fun statusColor(status: Status) = when (status) {
+    Status.CONNECTED -> MaterialTheme.colorScheme.secondary
+    Status.CONNECTING -> MaterialTheme.colorScheme.primary
+    else -> MaterialTheme.colorScheme.onSurfaceVariant
 }

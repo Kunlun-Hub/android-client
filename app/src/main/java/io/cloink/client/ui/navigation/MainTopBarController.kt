@@ -26,18 +26,7 @@ class MainTopBarController(
     fun install(view: ComposeView) {
         view.setContent {
             CloinkTheme {
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            Modifier
-                                .clickable { if (current.value == R.id.nav_home) onMenu() else onBack() }
-                                .padding(horizontal = 20.dp, vertical = 14.dp),
-                        ) {
-                            Text(if (current.value == R.id.nav_home) "Menu" else "Back", color = MaterialTheme.colorScheme.primary)
-                        }
-                        Text(title.value, style = MaterialTheme.typography.titleMedium)
-                    }
-                }
+                MainTopBar(current.value, title.value, onMenu, onBack)
             }
         }
     }
@@ -45,5 +34,21 @@ class MainTopBarController(
     fun update(destination: Int, destinationTitle: String?) {
         current.value = destination
         title.value = destinationTitle.orEmpty()
+    }
+}
+
+@androidx.compose.runtime.Composable
+internal fun MainTopBar(destination: Int, title: String, onMenu: () -> Unit, onBack: () -> Unit) {
+    Surface(color = MaterialTheme.colorScheme.background) {
+        Row(Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier
+                    .clickable { if (destination == R.id.nav_home) onMenu() else onBack() }
+                    .padding(horizontal = 20.dp, vertical = 14.dp),
+            ) {
+                Text(if (destination == R.id.nav_home) "Menu" else "Back", color = MaterialTheme.colorScheme.primary)
+            }
+            Text(title, style = MaterialTheme.typography.titleMedium)
+        }
     }
 }
