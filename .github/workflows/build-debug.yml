@@ -157,7 +157,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 36
-          target: google_apis
+          target: aosp_atd
           arch: x86_64
           profile: pixel_6
           disable-animations: true
@@ -168,6 +168,7 @@ jobs:
             adb shell settings put global device_provisioned 1
             adb shell am start -W -n io.cloink.client/.MainActivity
             sleep 3
+            adb shell pidof io.cloink.client
             adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'io.cloink.client://oauth2/callback?code=test-code' -p io.cloink.client
             adb shell dumpsys activity activities | grep -F 'io.cloink.client/.MainActivity'
             sleep 3
