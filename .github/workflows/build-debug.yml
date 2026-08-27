@@ -164,6 +164,5 @@ jobs:
           script: |
             test -n "$(find "$GITHUB_WORKSPACE/debug-artifacts" -name '*.apk' -print -quit)"
             adb install -r "$(find "$GITHUB_WORKSPACE/debug-artifacts" -name '*.apk' -print -quit)"
-            adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE \
-              -d 'io.cloink.client://oauth2/callback?code=test-code&state=test-state' io.cloink.client
+            adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'io.cloink.client://oauth2/callback?code=test-code&state=test-state' io.cloink.client
             adb shell dumpsys activity activities | grep -F 'io.cloink.client/.MainActivity'
