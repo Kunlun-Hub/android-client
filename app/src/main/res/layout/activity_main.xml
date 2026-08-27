@@ -14,44 +14,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <LinearLayout
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@android:color/transparent"
         android:fitsSystemWindows="true"
-        android:orientation="vertical"
-        android:background="@color/nb_bg">
-
-        <androidx.compose.ui.platform.ComposeView
-            android:id="@+id/nav_view"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:focusable="true"
-            android:focusableInTouchMode="false" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:layout_marginBottom="16dp"
-            android:gravity="center">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:text="@string/about_version" />
-
-            <TextView
-                android:id="@+id/nav_version"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                tools:text="1.0.0"/>
-        </LinearLayout>
-
-    </LinearLayout>
+        android:focusable="true"
+        android:focusableInTouchMode="false" />
 </androidx.drawerlayout.widget.DrawerLayout>

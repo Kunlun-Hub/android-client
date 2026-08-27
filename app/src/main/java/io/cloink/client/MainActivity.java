@@ -115,14 +115,12 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
             Log.i(LOGTAG, "Running on ChromeOS - using device code flow for authentication");
         }
 
-        setVersionText();
-
         DrawerLayout drawer = binding.drawerLayout;
         topBarController = new MainTopBarController(
                 () -> binding.drawerLayout.openDrawer(GravityCompat.START),
                 () -> navController.popBackStack());
         topBarController.install(binding.appBarMain.toolbar);
-        drawerController = new MainDrawerController(this::navigateFromDrawer, this::openDocs);
+        drawerController = new MainDrawerController(this::navigateFromDrawer, this::openDocs, BuildConfig.VERSION_NAME);
         drawerController.install(binding.navView);
         updateProfileMenuItem();
 
@@ -555,19 +553,6 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
         });
 
         alertDialog.show();
-    }
-
-    private void setVersionText() {
-        try {
-            try {
-                String packageName = getPackageName();
-                String versionName = getPackageManager().getPackageInfo(packageName, 0).versionName;
-                binding.navVersion.setText(versionName);
-            } catch (Exception e) {
-                binding.navVersion.setText("");
-            }
-        } catch (Exception e) {
-        }
     }
 
     ConnectionListener connectionListener = new ConnectionListener() {

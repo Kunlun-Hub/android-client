@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.weight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
@@ -16,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.cloink.client.R
 import io.cloink.client.ui.theme.CloinkTheme
@@ -24,6 +26,7 @@ import java.util.function.IntConsumer
 class MainDrawerController(
     private val onDestination: IntConsumer,
     private val onDocs: Runnable,
+    private val version: String,
 ) {
     private var selected by mutableIntStateOf(R.id.nav_home)
     private var profileName by mutableStateOf("default")
@@ -31,7 +34,7 @@ class MainDrawerController(
     fun install(view: ComposeView) {
         view.setContent {
             CloinkTheme {
-                MainDrawer(selected, profileName, onDestination::accept, onDocs::run)
+                MainDrawer(selected, profileName, version, onDestination::accept, onDocs::run)
             }
         }
     }
@@ -49,6 +52,7 @@ class MainDrawerController(
 internal fun MainDrawer(
     selected: Int,
     profileName: String,
+    version: String,
     onDestination: (Int) -> Unit,
     onDocs: () -> Unit,
 ) {
@@ -72,6 +76,13 @@ internal fun MainDrawer(
             "Documentation",
             modifier = Modifier.clickable(onClick = onDocs).padding(16.dp),
             color = MaterialTheme.colorScheme.primary,
+        )
+        Spacer(Modifier.weight(1f))
+        Text(
+            "${stringResource(R.string.about_version)}$version",
+            modifier = Modifier.padding(16.dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodySmall,
         )
     }
 }

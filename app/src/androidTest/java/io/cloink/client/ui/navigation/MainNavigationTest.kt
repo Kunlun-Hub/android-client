@@ -20,7 +20,7 @@ class MainNavigationTest {
         var docsOpened = false
         composeRule.setContent {
             CloinkTheme(darkTheme = false) {
-                MainDrawer(R.id.nav_home, "Work profile", { destination = it }, { docsOpened = true })
+                MainDrawer(R.id.nav_home, "Work profile", "test", { destination = it }, { docsOpened = true })
             }
         }
 
