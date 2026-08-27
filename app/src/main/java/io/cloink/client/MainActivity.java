@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -174,7 +174,12 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
             });
         }
 
-        navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment_content_main);
+        if (navHostFragment == null) {
+            throw new IllegalStateException("Main navigation host is missing");
+        }
+        navController = navHostFragment.getNavController();
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             drawerController.select(destination.getId());
