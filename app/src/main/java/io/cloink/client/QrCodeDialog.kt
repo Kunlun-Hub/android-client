@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.view.ViewGroup
+import androidx.activity.ComponentDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,7 +38,7 @@ class QrCodeDialog : DialogFragment() {
     override fun onCreateDialog(state: Bundle?): Dialog {
         val url = requireArguments().getString(ARG_URL).orEmpty()
         val userCode = requireArguments().getString(ARG_USER_CODE).orEmpty()
-        return Dialog(requireContext()).apply {
+        return ComponentDialog(requireContext()).apply {
             window?.setBackgroundDrawableResource(android.R.color.transparent)
             setContentView(ComposeView(requireContext()).apply {
                 setViewCompositionStrategy(androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnDetachedFromWindow)

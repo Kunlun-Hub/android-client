@@ -1,9 +1,9 @@
 package io.cloink.client.ui.dialog
 
 import android.app.Activity
-import android.app.Dialog
 import android.graphics.Color
 import android.view.ViewGroup
+import androidx.activity.ComponentDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,7 +57,7 @@ object ComposeDialogs {
     ) {
         if (activity.isFinishing || activity.isDestroyed) return
 
-        val dialog = Dialog(activity)
+        val dialog = ComponentDialog(activity)
         val composeView = ComposeView(activity).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
             setContent { CloinkTheme { content { dialog.dismiss() } } }

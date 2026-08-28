@@ -1,6 +1,5 @@
 package io.cloink.client.ui.advanced
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -38,6 +37,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import io.cloink.client.R
+import io.cloink.client.ThemePreferences
 import io.cloink.client.tool.Preferences
 import io.cloink.client.tool.ProfileManagerWrapper
 import io.cloink.client.ui.components.SettingsPage
@@ -115,9 +115,9 @@ class AdvancedFragment : Fragment() {
 
                 SectionTitle(stringResource(R.string.advanced_theme_title))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ThemeOption(R.string.advanced_theme_system, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, settings.theme) { settings = settings.copy(theme = it); setTheme(it) }
-                    ThemeOption(R.string.advanced_theme_light, AppCompatDelegate.MODE_NIGHT_NO, settings.theme) { settings = settings.copy(theme = it); setTheme(it) }
-                    ThemeOption(R.string.advanced_theme_dark, AppCompatDelegate.MODE_NIGHT_YES, settings.theme) { settings = settings.copy(theme = it); setTheme(it) }
+                    ThemeOption(R.string.advanced_theme_system, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, settings.theme, ::setTheme)
+                    ThemeOption(R.string.advanced_theme_light, AppCompatDelegate.MODE_NIGHT_NO, settings.theme, ::setTheme)
+                    ThemeOption(R.string.advanced_theme_dark, AppCompatDelegate.MODE_NIGHT_YES, settings.theme, ::setTheme)
                 }
             }
         }
@@ -149,8 +149,14 @@ class AdvancedFragment : Fragment() {
     }
 
     private fun setTheme(mode: Int) {
-        requireContext().getSharedPreferences("settings", Context.MODE_PRIVATE).edit().putInt("theme_mode", mode).apply()
-        AppCompatDelegate.setDefaultNightMode(mode)
+        if (!ThemePreferences.saveThemeMode(requireContext(), mode)) {
+            return
+        }
+        view?.post {
+            if (isAdded && AppCompatDelegate.getDefaultNightMode() != mode) {
+                AppCompatDelegate.setDefaultNightMode(mode)
+            }
+        }
     }
 
     private fun toast(message: Int) = Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
@@ -168,7 +174,7 @@ class AdvancedFragment : Fragment() {
             disableFirewall = goPreferences.disableFirewall,
             disableIPv6 = goPreferences.disableIPv6,
             forceRelay = localPreferences.isConnectionForceRelayed,
-            theme = requireContext().getSharedPreferences("settings", Context.MODE_PRIVATE).getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM),
+            theme = ThemePreferences.getThemeMode(requireContext()),
         )
     }.getOrElse { AdvancedState() }
 }
