@@ -7,6 +7,10 @@ on:
         description: "Only run the Android 16 startup and callback checks"
         type: boolean
         default: false
+      android30_only:
+        description: "Only run the API 30 UI checks and screenshot"
+        type: boolean
+        default: false
   pull_request:
   push:
     branches:
@@ -57,7 +61,7 @@ jobs:
           retention-days: 1
 
   unit-tests:
-    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.android16_only }}
+    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.android16_only && !inputs.android30_only) }}
     needs: build-debug
     runs-on: ubuntu-latest
     steps:
@@ -131,7 +135,29 @@ jobs:
           disk-size: 4096M
           heap-size: 512M
           disable-animations: true
-          script: ./gradlew connectedDebugAndroidTest --no-daemon -Pandroid.testInstrumentationRunnerArguments.notClass=io.cloink.client.NetworkConnectivityStressTest
+          script: |
+            ./gradlew connectedDebugAndroidTest --no-daemon -Pandroid.testInstrumentationRunnerArguments.notClass=io.cloink.client.NetworkConnectivityStressTest
+            adb install -r app/build/outputs/apk/debug/app-debug.apk
+            adb shell am force-stop io.cloink.client
+            adb shell run-as io.cloink.client mkdir -p /data/user/0/io.cloink.client/shared_prefs
+            printf '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><map><boolean name="first_launch" value="false" /></map>' > /tmp/cloink-ui-prefs.xml
+            adb push /tmp/cloink-ui-prefs.xml /data/local/tmp/cloink-ui-prefs.xml
+            adb shell run-as io.cloink.client cp /data/local/tmp/cloink-ui-prefs.xml /data/user/0/io.cloink.client/shared_prefs/ui_prefs.xml
+            adb shell input keyevent KEYCODE_WAKEUP
+            adb shell wm dismiss-keyguard
+            adb shell am start -W -n io.cloink.client/.MainActivity
+            sleep 2
+            adb shell dumpsys activity activities | grep -F 'io.cloink.client/.MainActivity'
+            if adb shell uiautomator dump /sdcard/cloink-ui.xml >/dev/null 2>&1 && adb shell cat /sdcard/cloink-ui.xml | grep -q 'text="Later"'; then adb shell input tap 540 1090; sleep 1; fi
+            adb exec-out screencap -p > /tmp/cloink-ui-api30.png
+
+      - name: Upload API 30 UI screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-api30-ui-screenshot
+          path: /tmp/cloink-ui-api30.png
+          retention-days: 7
 
       - name: Upload test results
         if: always()
@@ -144,6 +170,7 @@ jobs:
           retention-days: 3
 
   android-16-callback:
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.android30_only }}
     needs: build-debug
     runs-on: ubuntu-latest
     steps:
@@ -173,15 +200,26 @@ jobs:
             adb install -r "$(find "$GITHUB_WORKSPACE/debug-artifacts" -name '*.apk' -print -quit)"
             adb shell settings put secure user_setup_complete 1
             adb shell settings put global device_provisioned 1
+            adb shell input keyevent KEYCODE_WAKEUP
+            adb shell wm dismiss-keyguard
+            adb shell settings put system screen_off_timeout 600000
             adb logcat -c
             adb shell am start -W -n io.cloink.client/.MainActivity
             sleep 3
             adb logcat -d > /tmp/app-start.log
             grep -E 'FATAL EXCEPTION|AndroidRuntime|io.cloink.client|NBMainActivity' /tmp/app-start.log || true
             adb shell pidof io.cloink.client
-            for theme_mode in 2 1 -1; do adb shell am force-stop io.cloink.client; adb shell run-as io.cloink.client mkdir -p /data/user/0/io.cloink.client/shared_prefs; printf '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><map><int name="theme_mode" value="%s" /></map>' "$theme_mode" > /tmp/cloink-settings.xml; adb push /tmp/cloink-settings.xml /data/local/tmp/cloink-settings.xml; adb shell run-as io.cloink.client cp /data/local/tmp/cloink-settings.xml /data/user/0/io.cloink.client/shared_prefs/settings.xml; adb logcat -c; adb shell am start -W -n io.cloink.client/.MainActivity; sleep 2; if ! adb shell pidof io.cloink.client || adb logcat -d | grep -E 'FATAL EXCEPTION|Process: io\.cloink\.client'; then adb logcat -d -v threadtime | tail -250; echo "Theme mode $theme_mode crashed on Android 16" >&2; exit 1; fi; done
+            for theme_mode in 2 1 -1; do adb shell am force-stop io.cloink.client; adb shell run-as io.cloink.client mkdir -p /data/user/0/io.cloink.client/shared_prefs; printf '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><map><int name="theme_mode" value="%s" /></map>' "$theme_mode" > /tmp/cloink-settings.xml; adb push /tmp/cloink-settings.xml /data/local/tmp/cloink-settings.xml; adb shell run-as io.cloink.client cp /data/local/tmp/cloink-settings.xml /data/user/0/io.cloink.client/shared_prefs/settings.xml; adb logcat -c; adb shell am start -W -n io.cloink.client/.MainActivity; sleep 2; adb exec-out screencap -p > "/tmp/cloink-theme-${theme_mode}.png"; if ! adb shell pidof io.cloink.client || adb logcat -d | grep -E 'FATAL EXCEPTION|Process: io\.cloink\.client'; then adb logcat -d -v threadtime | tail -250; echo "Theme mode $theme_mode crashed on Android 16" >&2; exit 1; fi; done
             adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'io.cloink.client://oauth2/callback?code=test-code' -p io.cloink.client
             adb shell dumpsys activity activities | grep -F 'io.cloink.client/.MainActivity'
             sleep 3
             adb shell run-as io.cloink.client cat shared_prefs/auth_callback_diagnostics.xml > /tmp/oauth-callback.xml
             grep -E 'accepted|waiting_for_binder|delivery_attempted|retrying|delivered' /tmp/oauth-callback.xml
+
+      - name: Upload Android 16 theme screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-16-theme-screenshots
+          path: /tmp/cloink-theme-*.png
+          retention-days: 7

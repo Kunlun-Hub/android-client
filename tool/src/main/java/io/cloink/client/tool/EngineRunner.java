@@ -169,7 +169,10 @@ class EngineRunner {
         @Override public void onPeersListChanged(long n) { delegate.onPeersListChanged(n); }
     }
 
-    public synchronized void removeStatusListener() {
+    public synchronized void removeStatusListener(ConnectionListener expectedListener) {
+        if (unwrap(this.connectionListener) != unwrap(expectedListener)) {
+            return;
+        }
         this.connectionListener = null;
         goClient.removeConnectionListener();
     }

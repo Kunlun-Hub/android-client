@@ -1,16 +1,21 @@
 package io.cloink.client.ui.navigation
 
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Settings
@@ -33,10 +38,14 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.ui.unit.dp
 import io.cloink.client.R
+import io.cloink.client.ThemePreferences
 import io.cloink.client.ui.theme.CloinkTheme
 import java.util.function.IntConsumer
+import androidx.compose.material3.Switch
+import androidx.compose.ui.semantics.Role
 
 class MainDrawerController(
     private val onDestination: IntConsumer,
@@ -49,7 +58,22 @@ class MainDrawerController(
     fun install(view: ComposeView) {
         view.setContent {
             CloinkTheme {
-                MainDrawer(selected, profileName, version, onDestination::accept, onDocs::run)
+                MainDrawer(
+                    selected,
+                    profileName,
+                    version,
+                    onDestination::accept,
+                    onDocs::run,
+                ) { dark ->
+                    val mode = if (dark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+                    if (ThemePreferences.saveThemeMode(view.context, mode)) {
+                        view.post {
+                            if (AppCompatDelegate.getDefaultNightMode() != mode) {
+                                AppCompatDelegate.setDefaultNightMode(mode)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -70,7 +94,14 @@ internal fun MainDrawer(
     version: String,
     onDestination: (Int) -> Unit,
     onDocs: () -> Unit,
+    onThemeToggle: (Boolean) -> Unit = {},
 ) {
+    val systemDark = isSystemInDarkTheme()
+    val darkTheme = when (ThemePreferences.getThemeMode(androidx.compose.ui.platform.LocalContext.current)) {
+        AppCompatDelegate.MODE_NIGHT_YES -> true
+        AppCompatDelegate.MODE_NIGHT_NO -> false
+        else -> systemDark
+    }
     Surface(
         modifier = Modifier
             .width(304.dp)
@@ -83,6 +114,8 @@ internal fun MainDrawer(
         Column(
             Modifier
                 .fillMaxHeight()
+                .statusBarsPadding()
+                .navigationBarsPadding()
                 .padding(horizontal = 12.dp),
         ) {
             Column(
@@ -106,10 +139,28 @@ internal fun MainDrawer(
             DrawerDestination(R.id.nav_change_server, stringResource(R.string.menu_change_server), Icons.Default.Place, selected, onDestination)
             DrawerDestination(R.id.nav_troubleshoot, stringResource(R.string.menu_troubleshoot), Icons.Default.Warning, selected, onDestination)
             DrawerDestination(R.id.nav_about, stringResource(R.string.menu_about), Icons.Default.Info, selected, onDestination)
-            DrawerCommand(stringResource(R.string.menu_docs), Icons.Default.List, onDocs)
+            DrawerCommand(stringResource(R.string.menu_docs), Icons.AutoMirrored.Filled.List, onDocs)
 
             Spacer(Modifier.weight(1f))
             HorizontalDivider(Modifier.padding(horizontal = 12.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .toggleable(
+                        value = darkTheme,
+                        role = Role.Switch,
+                        onValueChange = onThemeToggle,
+                    )
+                    .padding(horizontal = 12.dp, vertical = 14.dp),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.drawer_dark_theme),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                Switch(checked = darkTheme, onCheckedChange = null)
+            }
             Text(
                 "${stringResource(R.string.about_version)}$version",
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 18.dp),

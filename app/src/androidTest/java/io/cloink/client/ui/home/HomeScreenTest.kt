@@ -55,7 +55,7 @@ class HomeScreenTest {
         }
 
         composeRule.onNodeWithContentDescription("Connect").performClick()
-        composeRule.onNodeWithText("View").performClick()
+        composeRule.onNodeWithContentDescription("View").performClick()
 
         composeRule.runOnIdle {
             assertEquals(1, toggleCount)

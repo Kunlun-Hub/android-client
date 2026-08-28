@@ -225,8 +225,8 @@ public class VPNService extends android.net.VpnService {
             engineRunner.setConnectionListener(listener);
         }
 
-        public void removeConnectionStateListener() {
-            engineRunner.removeStatusListener();
+        public void removeConnectionStateListener(ConnectionListener listener) {
+            engineRunner.removeStatusListener(listener);
         }
 
         public void addServiceStateListener(ServiceStateListener serviceStateListener) {

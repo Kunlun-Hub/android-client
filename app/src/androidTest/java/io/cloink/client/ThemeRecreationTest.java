@@ -18,6 +18,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.cloink.client.ui.PreferenceUI;
 import io.cloink.client.ui.dialog.ComposeDialogs;
 
@@ -41,10 +43,12 @@ public class ThemeRecreationTest {
     @Test
     public void advancedScreenSurvivesThemeChangesAndColdRelaunch() {
         try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
+            AtomicReference<MainActivity> originalActivity = new AtomicReference<>();
+            scenario.onActivity(originalActivity::set);
             navigateToAdvanced(scenario);
-            applyThemeAndAwaitRecreation(scenario, AppCompatDelegate.MODE_NIGHT_YES);
-            applyThemeAndAwaitRecreation(scenario, AppCompatDelegate.MODE_NIGHT_NO);
-            applyThemeAndAwaitRecreation(scenario, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+            applyThemeWithoutRecreatingActivity(scenario, originalActivity.get(), AppCompatDelegate.MODE_NIGHT_YES);
+            applyThemeWithoutRecreatingActivity(scenario, originalActivity.get(), AppCompatDelegate.MODE_NIGHT_NO);
+            applyThemeWithoutRecreatingActivity(scenario, originalActivity.get(), AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         }
 
         try (ActivityScenario<MainActivity> relaunched = ActivityScenario.launch(MainActivity.class)) {
@@ -73,7 +77,7 @@ public class ThemeRecreationTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
-    private void applyThemeAndAwaitRecreation(ActivityScenario<MainActivity> scenario, int mode) {
+    private void applyThemeWithoutRecreatingActivity(ActivityScenario<MainActivity> scenario, MainActivity originalActivity, int mode) {
         scenario.onActivity(activity -> {
             assertFalse(activity.isFinishing());
             if (!ThemePreferences.saveThemeMode(activity, mode)) {
@@ -84,6 +88,7 @@ public class ThemeRecreationTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         scenario.onActivity(activity -> {
             assertFalse(activity.isFinishing());
+            assertEquals(originalActivity, activity);
             assertEquals(mode, ThemePreferences.getThemeMode(activity));
             Fragment navHost = activity.getSupportFragmentManager()
                     .findFragmentById(R.id.nav_host_fragment_content_main);

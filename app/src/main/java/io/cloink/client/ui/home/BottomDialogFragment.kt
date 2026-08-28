@@ -13,13 +13,23 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
@@ -29,8 +39,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
@@ -66,6 +78,7 @@ class BottomDialogFragment : BottomSheetDialogFragment() {
                 BottomSheetBehavior.from(sheet).apply {
                     this.state = BottomSheetBehavior.STATE_EXPANDED
                     skipCollapsed = true
+                    isDraggable = false
                 }
                 sheet.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
             }
@@ -79,7 +92,11 @@ class BottomDialogFragment : BottomSheetDialogFragment() {
                 val peers by peersViewModel.uiState.observeAsState(PeersFragmentUiState(emptyList()))
                 val networks by networksViewModel.uiState.observeAsState(NetworksFragmentUiState(emptyList(), emptyList()))
                 CloinkTheme {
-                    NetworkPanel(peers.peers, networks.resources) { resource, selected ->
+                    NetworkPanel(
+                        peers.peers,
+                        networks.resources,
+                        onDismiss = ::dismiss,
+                    ) { resource, selected ->
                         runCatching {
                             if (selected) networksViewModel.selectRoute(resource.name)
                             else networksViewModel.deselectRoute(resource.name)
@@ -109,28 +126,54 @@ class BottomDialogFragment : BottomSheetDialogFragment() {
 internal fun NetworkPanel(
     peers: List<Peer>,
     resources: List<Resource>,
+    onDismiss: () -> Unit = {},
     onRouteSelection: (Resource, Boolean) -> Unit,
 ) {
     var tab by remember { mutableIntStateOf(0) }
     var search by remember { mutableStateOf("") }
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(tab == 0, { tab = 0; search = "" }, label = { Text(stringResource(R.string.peers_title)) })
-                FilterChip(tab == 1, { tab = 1; search = "" }, label = { Text(stringResource(R.string.networks_title)) })
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .padding(horizontal = 18.dp),
+        ) {
+            Row(
+                Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(stringResource(R.string.network_panel_title), style = MaterialTheme.typography.headlineMedium)
+                Surface(shape = RoundedCornerShape(50), color = MaterialTheme.colorScheme.surfaceVariant) {
+                    IconButton(onClick = onDismiss) {
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.btn_close))
+                    }
+                }
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(tab == 0, { tab = 0; search = "" }, modifier = Modifier.weight(1f), label = { Text(stringResource(R.string.peers_title)) })
+                FilterChip(tab == 1, { tab = 1; search = "" }, modifier = Modifier.weight(1f), label = { Text(stringResource(R.string.networks_title)) })
             }
             OutlinedTextField(
                 search,
                 { search = it },
-                Modifier.fillMaxWidth(),
+                Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 placeholder = { Text(stringResource(if (tab == 0) R.string.peers_hint_search_peers else R.string.networks_hint_search_networks)) },
+                singleLine = true,
             )
             if (tab == 0) {
-                PeerList(peers.filter { it.fqdn.contains(search, true) || it.ip.contains(search, true) })
+                PeerList(
+                    peers.filter { it.fqdn.contains(search, true) || it.ip.contains(search, true) },
+                    Modifier.weight(1f),
+                )
             } else {
                 ResourceList(
                     resources.filter { it.name.contains(search, true) || it.address.contains(search, true) },
                     onRouteSelection,
+                    Modifier.weight(1f),
                 )
             }
         }
@@ -138,10 +181,15 @@ internal fun NetworkPanel(
 }
 
 @androidx.compose.runtime.Composable
-private fun PeerList(peers: List<Peer>) {
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+private fun PeerList(peers: List<Peer>, modifier: Modifier = Modifier) {
+    LazyColumn(modifier.fillMaxWidth().testTag("network_list"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(peers, key = { it.fqdn }) { peer ->
-            Card(Modifier.fillMaxWidth()) {
+            Card(
+                Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            ) {
                 Column(Modifier.padding(16.dp)) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(peer.fqdn, style = MaterialTheme.typography.titleMedium)
@@ -156,10 +204,15 @@ private fun PeerList(peers: List<Peer>) {
 }
 
 @androidx.compose.runtime.Composable
-private fun ResourceList(resources: List<Resource>, onRouteSelection: (Resource, Boolean) -> Unit) {
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+private fun ResourceList(resources: List<Resource>, onRouteSelection: (Resource, Boolean) -> Unit, modifier: Modifier = Modifier) {
+    LazyColumn(modifier.fillMaxWidth().testTag("network_list"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(resources, key = { it.name + it.address }) { resource ->
-            Card(Modifier.fillMaxWidth()) {
+            Card(
+                Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            ) {
                 Row(Modifier.fillMaxWidth().padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                     Column(Modifier.weight(1f)) {
                         Text(resource.name, style = MaterialTheme.typography.titleMedium)

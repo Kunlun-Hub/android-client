@@ -12,6 +12,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.isToggleable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.unit.dp
 import io.cloink.client.R
@@ -29,16 +30,21 @@ class MainNavigationTest {
     fun drawerReportsDestinationAndDocumentationActions() {
         var destination = 0
         var docsOpened = false
+        var darkTheme = false
         composeRule.setContent {
             CloinkTheme(darkTheme = false) {
-                MainDrawer(R.id.nav_home, "Work profile", "test", { destination = it }, { docsOpened = true })
+                MainDrawer(R.id.nav_home, "Work profile", "test", { destination = it }, { docsOpened = true }, { darkTheme = it })
             }
         }
 
         composeRule.onNodeWithText("Advanced").performClick()
         composeRule.runOnIdle { assertEquals(R.id.nav_advanced, destination) }
         composeRule.onNodeWithText("Docs").performClick()
-        composeRule.runOnIdle { assertEquals(true, docsOpened) }
+        composeRule.onNode(isToggleable()).performClick()
+        composeRule.runOnIdle {
+            assertEquals(true, docsOpened)
+            assertEquals(true, darkTheme)
+        }
 
         val drawer = composeRule.onNodeWithTag("main_drawer_surface")
         drawer.assertWidthIsEqualTo(304.dp)

@@ -1,13 +1,12 @@
 package io.cloink.client;
 
-import android.animation.StateListAnimator;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ApplicationInfo;
-import android.graphics.drawable.ColorDrawable;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -24,8 +23,8 @@ import java.util.List;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -48,8 +47,6 @@ import io.cloink.gomobile.android.URLOpener;
 
 
 public class MainActivity extends AppCompatActivity implements ServiceAccessor, StateListenerRegistry {
-
-    private StateListAnimator stateAnim;
 
     private enum ConnectionState {
         UNKNOWN,
@@ -109,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -274,6 +272,12 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
     }
 
     @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        EdgeToEdge.enable(this);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         Log.d(LOGTAG, "onStart");
@@ -310,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
         }
 
         if (mBinder != null) {
-            mBinder.removeConnectionStateListener();
+            mBinder.removeConnectionStateListener(connectionListener);
             mBinder.removeServiceStateListener(serviceStateListener);
             unbindService(serviceIPC);
             mBinder = null;
@@ -323,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
         super.onDestroy();
 
         if (mBinder != null) {
-            mBinder.removeConnectionStateListener();
+            mBinder.removeConnectionStateListener(connectionListener);
             mBinder.removeServiceStateListener(serviceStateListener);
             unbindService(serviceIPC);
             mBinder = null;
@@ -584,20 +588,17 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
     }
 
     private void removeToolbarShadow() {
-        stateAnim = binding.appbar.getStateListAnimator();
         binding.appbar.setStateListAnimator(null);
         binding.appbar.setElevation(0f);
         binding.toolbar.setElevation(0);
-        binding.toolbar.setBackground(new ColorDrawable(ContextCompat.getColor(this, R.color.nb_bg_home)));
+        binding.toolbar.setBackgroundColor(android.graphics.Color.TRANSPARENT);
     }
 
     private void resetToolbar() {
-        if(stateAnim!=null) {
-            binding.appbar.setStateListAnimator(stateAnim);
-        }
-        binding.appbar.setElevation(10f);
+        binding.appbar.setStateListAnimator(null);
+        binding.appbar.setElevation(0f);
         binding.toolbar.setElevation(0);
-        binding.toolbar.setBackground(new ColorDrawable(ContextCompat.getColor(this, R.color.nb_bg)));
+        binding.toolbar.setBackgroundColor(android.graphics.Color.TRANSPARENT);
     }
 
     private void showAlwaysOnDialog(Runnable onDismissAction) {

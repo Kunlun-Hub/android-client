@@ -18,6 +18,7 @@
     <string name="drawer_subtitle">Secure private networking</string>
     <string name="navigation_menu">Menu</string>
     <string name="navigation_back">Back</string>
+    <string name="drawer_dark_theme">Dark theme</string>
     <string name="vpn_permission_required">VPN permission is required</string>
 
     <string name="main_status_disconnected">Disconnected</string>
@@ -26,11 +27,14 @@
     <string name="home_connected">Connected</string>
     <string name="home_disconnecting">Disconnecting</string>
     <string name="home_status_connecting">Establishing secure connection</string>
+    <string name="home_status_disconnected">Your private network is paused</string>
     <string name="home_status_connected">Cloink network active</string>
     <string name="home_status_disconnecting">Closing connection</string>
     <string name="home_network_peers">Network peers</string>
     <string name="home_peers_connected">%1$d of %2$d connected</string>
     <string name="home_view_peers">View</string>
+    <string name="home_device_unavailable">Device details unavailable</string>
+    <string name="network_panel_title">Network</string>
     <string name="main_desc_bg_mask">background mask</string>
     <string name="main_desc_connect">connect-disconnect</string>
 

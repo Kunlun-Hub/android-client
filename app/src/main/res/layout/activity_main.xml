@@ -5,7 +5,6 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -21,8 +20,7 @@
             <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/nb_bg" />
+                android:layout_height="wrap_content" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -42,8 +40,6 @@
         android:layout_width="304dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/nb_bg"
-        android:fitsSystemWindows="true"
         android:focusable="true"
         android:focusableInTouchMode="false" />
 </androidx.drawerlayout.widget.DrawerLayout>

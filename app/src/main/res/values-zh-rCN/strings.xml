@@ -18,6 +18,7 @@
     <string name="drawer_subtitle">安全私有网络</string>
     <string name="navigation_menu">菜单</string>
     <string name="navigation_back">返回</string>
+    <string name="drawer_dark_theme">深色主题</string>
     <string name="vpn_permission_required">需要授予 VPN 权限</string>
 
     <string name="main_status_disconnected">未连接</string>
@@ -26,11 +27,14 @@
     <string name="home_connected">已连接</string>
     <string name="home_disconnecting">断开中</string>
     <string name="home_status_connecting">正在建立安全连接</string>
+    <string name="home_status_disconnected">私有网络已暂停</string>
     <string name="home_status_connected">Cloink 网络已启用</string>
     <string name="home_status_disconnecting">正在关闭连接</string>
     <string name="home_network_peers">网络设备</string>
     <string name="home_peers_connected">已连接 %1$d，共 %2$d</string>
     <string name="home_view_peers">查看</string>
+    <string name="home_device_unavailable">设备信息暂不可用</string>
+    <string name="network_panel_title">网络</string>
     <string name="main_desc_bg_mask">背景遮罩</string>
     <string name="main_desc_connect">连接或断开</string>
 
