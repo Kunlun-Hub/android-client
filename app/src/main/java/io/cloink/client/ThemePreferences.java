@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import io.cloink.client.ui.theme.ThemeRuntime;
 
 public final class ThemePreferences {
     static final String PREFERENCES_NAME = "settings";
@@ -34,14 +35,19 @@ public final class ThemePreferences {
         if (!isSupported(mode)) {
             return false;
         }
-        return context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
+        boolean saved = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
                 .edit()
                 .putInt(THEME_MODE_KEY, mode)
                 .commit();
+        if (saved) {
+            ThemeRuntime.update(mode);
+        }
+        return saved;
     }
 
     public static void applySavedTheme(Context context) {
         int mode = getThemeMode(context);
+        ThemeRuntime.update(mode);
         if (AppCompatDelegate.getDefaultNightMode() != mode) {
             AppCompatDelegate.setDefaultNightMode(mode);
         }

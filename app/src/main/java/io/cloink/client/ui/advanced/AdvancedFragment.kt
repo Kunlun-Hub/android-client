@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
@@ -69,27 +71,41 @@ class AdvancedFragment : Fragment() {
         var reconnectNotice by remember { mutableStateOf(false) }
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             SettingsPage(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                Text(stringResource(R.string.advanced_title_presharedkey), style = MaterialTheme.typography.headlineMedium)
-                Text(stringResource(R.string.advanced_details), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Spacer(Modifier.height(10.dp))
-                OutlinedTextField(
-                    value = key,
-                    onValueChange = { key = it; keyError = false },
-                    modifier = Modifier.fillMaxWidth(),
-                    visualTransformation = PasswordVisualTransformation(),
-                    isError = keyError,
-                    label = { Text(stringResource(R.string.advanced_hint)) },
-                )
-                Button(onClick = {
-                    if (key == "********") return@Button
-                    if (key.isNotBlank() && !key.matches(Regex("^[A-Za-z0-9+/=]{32,64}$"))) {
-                        keyError = true
-                    } else updateGo({ setPreSharedKey(key.trim()) }) {
-                        settings = settings.copy(hasPSK = key.isNotBlank())
-                        key = if (key.isBlank()) "" else "********"
-                        toast(R.string.advanced_presharedkey_saved_success)
+                Surface(
+                    shape = RoundedCornerShape(22.dp),
+                    color = MaterialTheme.colorScheme.surface,
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                ) {
+                    Column(Modifier.padding(18.dp)) {
+                        Text(stringResource(R.string.advanced_title_presharedkey), style = MaterialTheme.typography.titleLarge)
+                        Text(stringResource(R.string.advanced_details), modifier = Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Spacer(Modifier.height(14.dp))
+                        OutlinedTextField(
+                            value = key,
+                            onValueChange = { key = it; keyError = false },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp),
+                            visualTransformation = PasswordVisualTransformation(),
+                            isError = keyError,
+                            singleLine = true,
+                            label = { Text(stringResource(R.string.advanced_hint)) },
+                        )
+                        Button(
+                            modifier = Modifier.padding(top = 10.dp),
+                            shape = RoundedCornerShape(14.dp),
+                            onClick = {
+                                if (key == "********") return@Button
+                                if (key.isNotBlank() && !key.matches(Regex("^[A-Za-z0-9+/=]{32,64}$"))) {
+                                    keyError = true
+                                } else updateGo({ setPreSharedKey(key.trim()) }) {
+                                    settings = settings.copy(hasPSK = key.isNotBlank())
+                                    key = if (key.isBlank()) "" else "********"
+                                    toast(R.string.advanced_presharedkey_saved_success)
+                                }
+                            },
+                        ) { Text(stringResource(R.string.advanced_save)) }
                     }
-                }) { Text(stringResource(R.string.advanced_save)) }
+                }
 
                 SectionTitle(stringResource(R.string.advanced_title_network_security))
                 ToggleSetting(stringResource(R.string.advanced_rosenpass), settings.rosenpass, { enabled ->
@@ -115,9 +131,9 @@ class AdvancedFragment : Fragment() {
 
                 SectionTitle(stringResource(R.string.advanced_theme_title))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ThemeOption(R.string.advanced_theme_system, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, settings.theme, ::setTheme)
-                    ThemeOption(R.string.advanced_theme_light, AppCompatDelegate.MODE_NIGHT_NO, settings.theme, ::setTheme)
-                    ThemeOption(R.string.advanced_theme_dark, AppCompatDelegate.MODE_NIGHT_YES, settings.theme, ::setTheme)
+                    ThemeOption(R.string.advanced_theme_system, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM, settings.theme) { mode -> setTheme(mode); settings = settings.copy(theme = mode) }
+                    ThemeOption(R.string.advanced_theme_light, AppCompatDelegate.MODE_NIGHT_NO, settings.theme) { mode -> setTheme(mode); settings = settings.copy(theme = mode) }
+                    ThemeOption(R.string.advanced_theme_dark, AppCompatDelegate.MODE_NIGHT_YES, settings.theme) { mode -> setTheme(mode); settings = settings.copy(theme = mode) }
                 }
             }
         }
@@ -135,8 +151,9 @@ class AdvancedFragment : Fragment() {
 
     @Composable
     private fun SectionTitle(title: String) {
-        Spacer(Modifier.height(24.dp)); HorizontalDivider(); Spacer(Modifier.height(18.dp))
-        Text(title, style = MaterialTheme.typography.headlineMedium); Spacer(Modifier.height(6.dp))
+        Spacer(Modifier.height(26.dp))
+        Text(title, style = MaterialTheme.typography.titleLarge)
+        Spacer(Modifier.height(12.dp))
     }
 
     private fun setBoolean(setter: GoPreferences.(Boolean) -> Unit, value: Boolean, success: () -> Unit) =

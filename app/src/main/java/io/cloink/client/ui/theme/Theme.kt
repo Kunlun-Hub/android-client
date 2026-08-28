@@ -5,6 +5,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.platform.LocalContext
+import android.app.Activity
+import android.content.ContextWrapper
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.WindowCompat
 import androidx.compose.ui.graphics.Color
 
 private val LightColors = lightColorScheme(
@@ -37,9 +43,24 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun CloinkTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = when (ThemeRuntime.mode) {
+        AppCompatDelegate.MODE_NIGHT_YES -> true
+        AppCompatDelegate.MODE_NIGHT_NO -> false
+        else -> isSystemInDarkTheme()
+    },
     content: @Composable () -> Unit,
 ) {
+    val context = LocalContext.current
+    SideEffect {
+        var current = context
+        while (current is ContextWrapper && current !is Activity) current = current.baseContext
+        (current as? Activity)?.window?.let { window ->
+            WindowCompat.getInsetsController(window, window.decorView).apply {
+                isAppearanceLightStatusBars = !darkTheme
+                isAppearanceLightNavigationBars = !darkTheme
+            }
+        }
+    }
     MaterialTheme(
         colorScheme = if (darkTheme) DarkColors else LightColors,
         typography = CloinkTypography,

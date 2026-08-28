@@ -76,4 +76,29 @@ class NetworkPanelTest {
         list.performTouchInput { swipeDown() }
         composeRule.onNodeWithText("peer-0.cloink").assertIsDisplayed()
     }
+
+    @Test
+    fun longPeerAddressesAndStatusRemainVisible() {
+        composeRule.setContent {
+            CloinkTheme(darkTheme = true) {
+                NetworkPanel(
+                    peers = listOf(
+                        Peer(
+                            Status.CONNECTED,
+                            "100.80.165.14",
+                            "fdaf:6fa3:2796:e848:52fd:2c14:80bd:cfac",
+                            "desktop-fpvsl1g-123-251.vl2hao9p.cloink.4w.ink",
+                        ),
+                    ),
+                    resources = emptyList(),
+                    onRouteSelection = { _, _ -> },
+                )
+            }
+        }
+
+        composeRule.onNodeWithText("desktop-fpvsl1g-123-251.vl2hao9p.cloink.4w.ink").assertIsDisplayed()
+        composeRule.onNodeWithText("100.80.165.14").assertIsDisplayed()
+        composeRule.onNodeWithText("fdaf:6fa3:2796:e848:52fd:2c14:80bd:cfac").assertIsDisplayed()
+        composeRule.onNodeWithText("Connected").assertIsDisplayed()
+    }
 }

@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.cloink.client.ui.PreferenceUI;
 import io.cloink.client.ui.dialog.ComposeDialogs;
+import io.cloink.client.ui.theme.ThemeRuntime;
 
 @RunWith(AndroidJUnit4.class)
 public class ThemeRecreationTest {
@@ -90,6 +91,7 @@ public class ThemeRecreationTest {
             assertFalse(activity.isFinishing());
             assertEquals(originalActivity, activity);
             assertEquals(mode, ThemePreferences.getThemeMode(activity));
+            assertEquals(mode, ThemeRuntime.INSTANCE.getMode());
             Fragment navHost = activity.getSupportFragmentManager()
                     .findFragmentById(R.id.nav_host_fragment_content_main);
             assertFalse(navHost == null);

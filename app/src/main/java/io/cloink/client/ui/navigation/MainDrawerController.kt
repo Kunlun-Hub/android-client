@@ -118,18 +118,18 @@ internal fun MainDrawer(
                 .navigationBarsPadding()
                 .padding(horizontal = 12.dp),
         ) {
-            Column(
+            Surface(
                 Modifier
                     .fillMaxWidth()
-                    .padding(start = 12.dp, end = 12.dp, top = 28.dp, bottom = 20.dp),
+                    .padding(top = 16.dp, bottom = 18.dp),
+                shape = RoundedCornerShape(22.dp),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
             ) {
-                Text("Cloink", style = MaterialTheme.typography.headlineSmall)
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    stringResource(R.string.drawer_subtitle),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                Column(Modifier.padding(horizontal = 18.dp, vertical = 16.dp)) {
+                    Text("CLOINK", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+                    Spacer(Modifier.height(3.dp))
+                    Text(stringResource(R.string.drawer_subtitle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
 
             DrawerDestination(R.id.nav_home, stringResource(R.string.menu_home), Icons.Default.Home, selected, onDestination)
@@ -151,14 +151,14 @@ internal fun MainDrawer(
                         role = Role.Switch,
                         onValueChange = onThemeToggle,
                     )
-                    .padding(horizontal = 12.dp, vertical = 14.dp),
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
                 horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
                 verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
             ) {
-                Text(
-                    text = stringResource(R.string.drawer_dark_theme),
-                    style = MaterialTheme.typography.bodyLarge,
-                )
+                Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                    Icon(Icons.Default.Settings, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Text(text = stringResource(R.string.drawer_dark_theme), modifier = Modifier.padding(start = 14.dp), style = MaterialTheme.typography.bodyLarge)
+                }
                 Switch(checked = darkTheme, onCheckedChange = null)
             }
             Text(
@@ -195,7 +195,7 @@ private fun DrawerItem(label: String, icon: ImageVector, selected: Boolean, onCl
         selected = selected,
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = NavigationDrawerItemDefaults.colors(
             selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f),
             selectedIconColor = MaterialTheme.colorScheme.primary,
