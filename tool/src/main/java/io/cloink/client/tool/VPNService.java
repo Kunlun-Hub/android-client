@@ -338,7 +338,8 @@ public class VPNService extends android.net.VpnService {
                         routes);
 
                 if (fd != -1) {
-                    this.protect(fd);
+                    // protect() is only for transport sockets. Protecting the TUN
+                    // descriptor can make OEM VPN stacks bypass the replacement.
                     this.engineRunner.renewTUN(fd);
                     pendingTUNRoutes = null;
                     Log.i(LOGTAG, "TUN routes applied: " + routes);

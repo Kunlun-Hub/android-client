@@ -12,6 +12,7 @@ import android.system.OsConstants;
 import android.util.Log;
 
 import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.concurrent.CountDownLatch;
 
 import io.cloink.gomobile.android.TunAdapter;
@@ -173,23 +174,23 @@ class IFace implements TunAdapter {
         return false;
     }
 
-    private LinkedList<Route> toRoutes(String routesString) {
-        LinkedList<Route> routesList = new LinkedList<>();
+    static LinkedList<Route> toRoutes(String routesString) {
+        LinkedHashMap<String, Route> uniqueRoutes = new LinkedHashMap<>();
         if(routesString == null) {
-            return routesList;
+            return new LinkedList<>();
         }
         if(routesString.isEmpty()) {
-            return routesList;
+            return new LinkedList<>();
         }
         String[] routes = routesString.split(";");
         for(String route : routes) {
             try {
                 Route r = new Route(route);
-                routesList.add(r);
+                uniqueRoutes.put(r.addr + "/" + r.prefixLength, r);
             } catch (Exception e) {
                 Log.e(LOGTAG, "invalid route: "+ route);
             }
         }
-        return routesList;
+        return new LinkedList<>(uniqueRoutes.values());
     }
 }
