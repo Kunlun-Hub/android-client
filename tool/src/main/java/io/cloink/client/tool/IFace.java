@@ -29,6 +29,7 @@ class IFace implements TunAdapter {
 
     @Override
     public long configureInterface(String address, String addressV6, long mtu, String dns, String searchDomainsString, String routesString) throws Exception {
+        Log.i(LOGTAG, "configuring Android TUN with routes: " + (routesString == null ? "" : routesString));
         String[] searchDomains = toSearchDomains(searchDomainsString);
         LinkedList<Route> routes = toRoutes(routesString);
 

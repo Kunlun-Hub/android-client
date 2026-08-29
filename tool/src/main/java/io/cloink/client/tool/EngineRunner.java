@@ -18,6 +18,7 @@ import io.cloink.gomobile.android.NetworkArray;
 import io.cloink.gomobile.android.NetworkChangeListener;
 import io.cloink.gomobile.android.PeerInfoArray;
 import io.cloink.gomobile.android.TunAdapter;
+import io.cloink.gomobile.android.TunSettings;
 import io.cloink.gomobile.android.URLOpener;
 
 class EngineRunner {
@@ -251,6 +252,11 @@ class EngineRunner {
 
     public void handleAuthRedirect(String callbackURL) throws Exception {
         goClient.handleAuthRedirect(callbackURL);
+    }
+
+    public String currentTunRoutes() throws Exception {
+        TunSettings settings = goClient.getTunSettings();
+        return settings == null || settings.getRoutes() == null ? "" : settings.getRoutes();
     }
 
     public PeerInfoArray peersInfo() {

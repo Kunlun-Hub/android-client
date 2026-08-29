@@ -31,6 +31,7 @@ public class VPNService extends android.net.VpnService {
     private EngineRunner engineRunner;
     private ForegroundNotification fgNotification;
     private TUNParameters currentTUNParameters;
+    private volatile String pendingTUNRoutes;
     private NetworkChangeNotifier notifier;
 
     private RouteChangeListener listener;
@@ -65,6 +66,7 @@ public class VPNService extends android.net.VpnService {
         engineRunner = new EngineRunner(this, notifier, tunAdapter, iFaceDiscover, versionName,
                 preferences.isTraceLogEnabled(), Version.isDebuggable(this), profileManager);
         engineRunner.addServiceStateListener(serviceStateListener);
+        engineRunner.addOnConnectedObserver(this::reconcileTUNRoutes);
 
         // Create network availability listener after the engine runner so we
         // can gate notifications on the engine actually being up; this avoids
@@ -299,6 +301,9 @@ public class VPNService extends android.net.VpnService {
     private TUNCreatorLooperThread tunCreator;
 
     private void queueTUNRenewal(String routes) {
+        routes = routes == null ? "" : routes;
+        pendingTUNRoutes = routes;
+        Log.i(LOGTAG, "queue TUN routes: " + routes);
         if (tunCreator == null) {
             tunCreator = new TUNCreatorLooperThread(this::recreateTUN);
             tunCreator.setPriority(Thread.MAX_PRIORITY);
@@ -315,29 +320,56 @@ public class VPNService extends android.net.VpnService {
         if (!engineRunner.isRunning()) return;
 
         // Renew TUN file descriptor if routes changed.
-        if (currentTUNParameters != null && currentTUNParameters.didRoutesChange(routes)) {
+        TUNParameters parameters = currentTUNParameters;
+        if (parameters == null) {
+            Log.i(LOGTAG, "TUN parameters are not ready; retaining pending routes: " + routes);
+            return;
+        }
+        if (parameters.didRoutesChange(routes)) {
             var iface = new IFace(VPNService.this);
 
             try {
                 int fd = (int)iface.configureInterface(
-                        currentTUNParameters.address,
-                        currentTUNParameters.addressV6,
-                        currentTUNParameters.mtu,
-                        currentTUNParameters.dns,
-                        currentTUNParameters.searchDomainsString,
+                        parameters.address,
+                        parameters.addressV6,
+                        parameters.mtu,
+                        parameters.dns,
+                        parameters.searchDomainsString,
                         routes);
 
                 if (fd != -1) {
                     this.protect(fd);
                     this.engineRunner.renewTUN(fd);
+                    pendingTUNRoutes = null;
+                    Log.i(LOGTAG, "TUN routes applied: " + routes);
                 }
             } catch (Exception e) {
                 Log.e(LOGTAG, "failed to recreate tunnel after route changed", e);
             }
+        } else {
+            pendingTUNRoutes = null;
+            Log.i(LOGTAG, "TUN routes already current: " + routes);
         }
     }
 
     public void setCurrentTUNParameters(TUNParameters currentTUNParameters) {
         this.currentTUNParameters = currentTUNParameters;
+        String pending = pendingTUNRoutes;
+        Log.i(LOGTAG, "TUN parameters ready with routes: " + currentTUNParameters.routesString);
+        if (pending != null && currentTUNParameters.didRoutesChange(pending)) {
+            queueTUNRenewal(pending);
+        } else if (pending != null) {
+            pendingTUNRoutes = null;
+        }
+    }
+
+    private void reconcileTUNRoutes() {
+        try {
+            String routes = engineRunner.currentTunRoutes();
+            Log.i(LOGTAG, "reconciling connected TUN routes: " + routes);
+            queueTUNRenewal(routes);
+        } catch (Exception e) {
+            Log.w(LOGTAG, "unable to reconcile connected TUN routes", e);
+        }
     }
 }
