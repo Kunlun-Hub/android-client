@@ -1,6 +1,12 @@
 package io.cloink.client.tool;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.net.ConnectivityManager;
+import android.net.LinkProperties;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.RouteInfo;
 import android.os.Build;
 import android.util.Log;
 
@@ -336,6 +342,7 @@ class EngineRunner {
     }
 
     public String debugBundle(boolean anonymize) throws Exception {
+        logAndroidVpnDiagnostics();
         String configPath = profileManager.getActiveConfigPath();
         String statePath = profileManager.getActiveStateFilePath();
         String cacheDir = context.getCacheDir().getAbsolutePath();
@@ -347,6 +354,36 @@ class EngineRunner {
         } catch (Exception e) {
             Log.e(LOGTAG, "goClient error", e);
             throw e;
+        }
+    }
+
+    private void logAndroidVpnDiagnostics() {
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            Log.i(LOGTAG, "diagnostic app version: " + packageInfo.versionName + " (" + packageInfo.getLongVersionCode() + ")");
+            Log.i(LOGTAG, "diagnostic core TUN routes: " + currentTunRoutes());
+
+            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            int vpnNetworks = 0;
+            for (Network network : manager.getAllNetworks()) {
+                NetworkCapabilities capabilities = manager.getNetworkCapabilities(network);
+                if (capabilities == null || !capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                    continue;
+                }
+                vpnNetworks++;
+                LinkProperties properties = manager.getLinkProperties(network);
+                if (properties == null) {
+                    Log.i(LOGTAG, "diagnostic VPN network " + network + " has no LinkProperties");
+                    continue;
+                }
+                Log.i(LOGTAG, "diagnostic VPN network " + network + " interface: " + properties.getInterfaceName());
+                for (RouteInfo route : properties.getRoutes()) {
+                    Log.i(LOGTAG, "diagnostic VPN route: " + route);
+                }
+            }
+            Log.i(LOGTAG, "diagnostic VPN network count: " + vpnNetworks);
+        } catch (Exception e) {
+            Log.w(LOGTAG, "unable to collect Android VPN diagnostics", e);
         }
     }
 }

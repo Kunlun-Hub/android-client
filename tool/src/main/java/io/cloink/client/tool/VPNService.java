@@ -252,6 +252,9 @@ public class VPNService extends android.net.VpnService {
         }
 
         public String debugBundle(boolean anonymize) throws Exception {
+            TUNParameters parameters = currentTUNParameters;
+            Log.i(LOGTAG, "diagnostic current TUN routes: " + (parameters == null ? "<not ready>" : parameters.routesString));
+            Log.i(LOGTAG, "diagnostic pending TUN routes: " + (pendingTUNRoutes == null ? "<none>" : pendingTUNRoutes));
             return engineRunner.debugBundle(anonymize);
         }
 
