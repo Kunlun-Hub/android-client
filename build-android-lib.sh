@@ -123,7 +123,7 @@ ensure_gomobile_tools
 CGO_ENABLED=0 gomobile bind \
   -o "$app_path/gomobile/cloink.aar" \
   -javapkg=io.cloink.gomobile \
-  -ldflags="-linkmode=external -extldflags=-Wl,-z,max-page-size=16384 -checklinkname=0 -X golang.zx2c4.com/wireguard/ipc.socketDirectory=/data/data/io.cloink.client/cache/wireguard -X github.com/netbirdio/netbird/version.version=$version" \
+  -ldflags="-linkmode=external -extldflags=-Wl,-z,max-page-size=16384 -checklinkname=0 -X golang.zx2c4.com/wireguard/ipc.socketDirectory=/data/data/io.cloink.client/cache/wireguard -X github.com/netbirdio/netbird/version.version=$version ${CLOINK_EXTRA_LDFLAGS:-}" \
   "$(pwd)/client/android"
 
 cd - > /dev/null
