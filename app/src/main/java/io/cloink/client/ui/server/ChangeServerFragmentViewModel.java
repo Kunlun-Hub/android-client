@@ -83,7 +83,8 @@ public class ChangeServerFragmentViewModel extends ViewModel {
         Auth authenticator;
 
         try {
-            authenticator = Android.newAuth(configFilePath, managementServerAddress);
+            // No MDM policy source in the interactive change-server flow; the Go side treats a null fetcher as an empty policy.
+            authenticator = Android.newAuth(configFilePath, managementServerAddress, null);
         } catch (Exception e) {
             emitErrorState(e);
             return Optional.empty();

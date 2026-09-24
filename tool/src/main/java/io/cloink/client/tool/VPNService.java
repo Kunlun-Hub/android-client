@@ -305,7 +305,6 @@ public class VPNService extends android.net.VpnService {
 
     private void queueTUNRenewal(String routes) {
         routes = routes == null ? "" : routes;
-        pendingTUNRoutes = routes;
         Log.i(LOGTAG, "queue TUN routes: " + routes);
         if (tunCreator == null) {
             tunCreator = new TUNCreatorLooperThread(this::recreateTUN);
@@ -321,6 +320,19 @@ public class VPNService extends android.net.VpnService {
 
     private void recreateTUN(String routes) {
         if (!engineRunner.isRunning()) return;
+
+        // The route-change notification from the Go core is only a poke — its
+        // payload is empty by design ("the actual TUN route state is owned by
+        // the route manager and pulled from there"). Pull the authoritative
+        // route set here on the looper thread; pulling on the notifier's own
+        // thread could deadlock against the engine's sync lock.
+        try {
+            routes = engineRunner.currentTunRoutes();
+        } catch (Exception e) {
+            Log.w(LOGTAG, "unable to pull current TUN routes; keeping existing tunnel", e);
+            return;
+        }
+        pendingTUNRoutes = routes;
 
         // Renew TUN file descriptor if routes changed.
         TUNParameters parameters = currentTUNParameters;
@@ -368,12 +380,9 @@ public class VPNService extends android.net.VpnService {
     }
 
     private void reconcileTUNRoutes() {
-        try {
-            String routes = engineRunner.currentTunRoutes();
-            Log.i(LOGTAG, "reconciling connected TUN routes: " + routes);
-            queueTUNRenewal(routes);
-        } catch (Exception e) {
-            Log.w(LOGTAG, "unable to reconcile connected TUN routes", e);
-        }
+        // Only poke the renewal queue; the looper thread pulls the current
+        // route set from the engine before touching the tunnel.
+        Log.i(LOGTAG, "reconciling connected TUN routes");
+        queueTUNRenewal("");
     }
 }

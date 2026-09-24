@@ -180,7 +180,7 @@ class AdvancedFragment : Fragment() {
 
     private fun loadSettings(): AdvancedState = runCatching {
         AdvancedState(
-            hasPSK = goPreferences.preSharedKey.isNotEmpty(),
+            hasPSK = goPreferences.hasPreSharedKey(),
             rosenpass = goPreferences.rosenpassEnabled,
             rosenpassPermissive = goPreferences.rosenpassPermissive,
             allowSSH = goPreferences.serverSSHAllowed,
