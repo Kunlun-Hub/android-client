@@ -128,6 +128,8 @@
     <string name="advanced_disable_ipv6_desc">Disables IPv6 overlay addressing on the tunnel interface</string>
     <string name="advanced_allow_ssh">Enable SSH</string>
     <string name="advanced_allow_ssh_desc">Allows SSH connections to this device</string>
+    <string name="advanced_allow_remote_jobs">Allow remote jobs</string>
+    <string name="advanced_allow_remote_jobs_desc">Allows the management server to run remote jobs (e.g. debug bundles) on this device</string>
     <string name="advanced_block_inbound">Block inbound connections</string>
     <string name="advanced_block_inbound_desc">Blocks all inbound connections to this device and routed networks. This overrides any policies received from the management service</string>
 
