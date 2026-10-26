@@ -289,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements ServiceAccessor, 
         super.onResume();
         // Update profile menu item when returning to MainActivity
         updateProfileMenuItem();
+        UpdateChecker.onResume(this);
     }
 
     @Override

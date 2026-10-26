@@ -59,6 +59,10 @@
     <string name="update_available_message">Version %1$s was signed and published by Cloink. Download it now?</string>
     <string name="update_download">Download</string>
     <string name="update_later">Later</string>
+    <string name="update_downloading">Downloading the Cloink update…</string>
+    <string name="update_download_failed">Update download failed. Please try again.</string>
+    <string name="update_verify_failed">Update package verification failed. Please try again.</string>
+    <string name="update_install_permission">Allow Cloink to install updates, then return to the app.</string>
     <string name="peers_connected"><![CDATA[<b>%1$d</b> <b>of</b> <b>%2$d</b> Peers connected]]></string>
     <string name="peers_hint_search_peers">Search peers</string>
     <string name="peers_title">Peers</string>

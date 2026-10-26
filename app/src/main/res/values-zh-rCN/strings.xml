@@ -58,6 +58,10 @@
     <string name="update_available_message">Cloink 已签名并发布版本 %1$s。是否现在下载？</string>
     <string name="update_download">下载</string>
     <string name="update_later">稍后</string>
+    <string name="update_downloading">正在下载 Cloink 更新…</string>
+    <string name="update_download_failed">更新下载失败，请重试。</string>
+    <string name="update_verify_failed">更新包校验失败，请重试。</string>
+    <string name="update_install_permission">请允许 Cloink 安装应用，然后返回 App 继续安装。</string>
     <string name="peers_connected"><![CDATA[已连接 <b>%1$d</b> / <b>%2$d</b> 台设备]]></string>
     <string name="peers_hint_search_peers">搜索设备</string>
     <string name="peers_title">设备</string>
