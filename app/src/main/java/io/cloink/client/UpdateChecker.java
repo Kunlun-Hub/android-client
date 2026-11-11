@@ -348,6 +348,17 @@ final class UpdateChecker {
     static boolean isNewer(String available, String current) {
         int[] availableParts = versionParts(available);
         int[] currentParts = versionParts(current);
+        // Release metadata may carry a fourth build segment so clients built
+        // from the same version can discover a rebuild. Once that build is
+        // installed, the package version still has three segments; treat the
+        // matching build-prefixed release as current instead of prompting in a
+        // loop.
+        if (availableParts.length == 4 && currentParts.length == 3 &&
+                availableParts[0] == currentParts[0] &&
+                availableParts[1] == currentParts[1] &&
+                availableParts[2] == currentParts[2]) {
+            return false;
+        }
         for (int i = 0; i < Math.max(availableParts.length, currentParts.length); i++) {
             int left = i < availableParts.length ? availableParts[i] : 0;
             int right = i < currentParts.length ? currentParts[i] : 0;
