@@ -59,7 +59,9 @@ final class UpdateChecker {
                 JSONObject release = new JSONObject(
                         Android.latestSignedRelease("android", "universal"));
                 String availableVersion = release.getString("version");
-                if (!isNewer(availableVersion, packageInfo.versionName)) {
+                long installedVersionCode = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+                        ? packageInfo.getLongVersionCode() : packageInfo.versionCode;
+                if (!isNewer(availableVersion, packageInfo.versionName, installedVersionCode)) {
                     return;
                 }
                 activity.runOnUiThread(() -> showPrompt(activity, release));
@@ -346,18 +348,21 @@ final class UpdateChecker {
     }
 
     static boolean isNewer(String available, String current) {
+        return isNewer(available, current, 0);
+    }
+
+    static boolean isNewer(String available, String current, long currentVersionCode) {
         int[] availableParts = versionParts(available);
         int[] currentParts = versionParts(current);
-        // Release metadata may carry a fourth build segment so clients built
-        // from the same version can discover a rebuild. Once that build is
-        // installed, the package version still has three segments; treat the
-        // matching build-prefixed release as current instead of prompting in a
-        // loop.
+        // Release metadata may carry a fourth build segment for a rebuild of the
+        // same versionName. Compare it with the installed versionCode: a client
+        // on the older build is prompted once, and the installed build then
+        // matches the release instead of prompting in a loop.
         if (availableParts.length == 4 && currentParts.length == 3 &&
                 availableParts[0] == currentParts[0] &&
                 availableParts[1] == currentParts[1] &&
                 availableParts[2] == currentParts[2]) {
-            return false;
+            return availableParts[3] > currentVersionCode;
         }
         for (int i = 0; i < Math.max(availableParts.length, currentParts.length); i++) {
             int left = i < availableParts.length ? availableParts[i] : 0;

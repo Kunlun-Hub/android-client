@@ -11,6 +11,9 @@ public class UpdateCheckerTest {
         Assert.assertFalse(UpdateChecker.isNewer("0.77.1", "v0.77.1"));
         Assert.assertFalse(UpdateChecker.isNewer("0.77.0", "0.77.1"));
         Assert.assertFalse(UpdateChecker.isNewer("0.77.2-beta", "0.77.2"));
-        Assert.assertFalse(UpdateChecker.isNewer("0.81.3.72", "0.81.3"));
+        Assert.assertTrue(UpdateChecker.isNewer("0.81.3.74", "0.81.3", 72));
+        Assert.assertFalse(UpdateChecker.isNewer("0.81.3.74", "0.81.3", 74));
+        Assert.assertFalse(UpdateChecker.isNewer("0.81.3.74", "0.81.3", 75));
+        Assert.assertTrue(UpdateChecker.isNewer("0.81.3.72", "0.81.3"));
     }
 }
